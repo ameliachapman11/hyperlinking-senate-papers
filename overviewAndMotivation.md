@@ -1,0 +1,28 @@
+# Senate Overview and Structure
+**Introduction:** The University of Edinburgh's Senatus Academicus (Senate) is a body of around 300 members which guides the academic direction of the university through policy. Membership consists of professors, non-professorial academic staff, student representatives, and other ex officio members (such as heads of schools). It holds in-person meetings at least three times per academic year for three hours at a time. Each official Senate meeting is preluded by two weeks of virtual E-Senate, which pertains to discussion of informational documents, requests observation from Senate members on a document, and serves as preparation for the upcoming Senate meeting. Agendas, papers, and minutes for each Senate/E-Senate meeting dating back to the 2015-2016 academic year are stored on the university's [Registry Services website](https://registryservices.ed.ac.uk/academic-services/committees/senate/agendas-papers).
+
+<br />
+
+## Committees
+The Senate has three primary committees: the Education Committee, Academic Policy and Regulations Committee (APRC), and the Quality Assurance Committee (QAC). The committees have smaller task groups which focus on accomplishing individual goals (such as examining data about student progression and retainment), but task groups not a necessary aspect of a committee and their existence vary by year.
+
+The senate has additional committees for which the agendas, papers, and minutes are not publicly available. These are the Senate Business Committee, the Honorary Degrees Committee, and the Senate Exception Committee. The Business Committee creates the agenda for Senate meetings and critically examine papers before deciding to pass them on to the Senate. The Honorary Degrees Committee reviews nominations for honorary degrees and fellowships and recommends recipients for the Senate's approval. The Exception Committee makes urgent business decisions between Senate meetings as needed. As this project is focused on hyperlinking the papers associated with the university senate, these additional committees will not be relevant.
+
+#### Education Committee
+The Education Committee's main responsibility is to develop policy and strategy concerning learning, teaching, development of curriculum, and promotion of new teaching technology/methods. It also critically engages with student feedback on experience. The Education Committee was created following the 2018-2019 academic year, and absorbed two prior committees: the Learning and Teaching Committee (LTC) and the Researcher Experience Committee (REC). The LTC existed from 2012-2019 and widely had the same formal goals as the current Education Committee. Examples of accomplishments resulting from the committee are enhancing training for personal tutors and development of the university's lecture recording system. The REC existed from 2015-2019 and had the primary goal of shaping postgraduate research programs and enhancing research experience. The agendas, papers, and minutes for the LTC and REC are stored seperately from those of the Education Committee.
+
+Links to *Agendas, Papers and Minutes* related to the Education Committee:
+* [Education Committee](https://registryservices.ed.ac.uk/academic-services/committees/education/agendas-papers)
+* [Learning and Teaching Committee](https://registryservices.ed.ac.uk/academic-services/committees/education/archive/learning-teaching/agendas-papers)
+* [Researcher Experience Committee](https://registryservices.ed.ac.uk/academic-services/committees/education/archive/researcher-experience/agendas-papers)
+
+#### Academic Policy and Regulations Committee (APRC)
+The APRC's main responsibility is to create, review, and update academic regulatory framework. An example of a past focus of the committee was to shape policy around coursework extensions and special circumstances. It is also responsible for matters of student conduct and discipline. [Link](https://registryservices.ed.ac.uk/academic-services/committees/academic-policy-regulations/agendas-papers) to the APRC's agendas, papers, and minutes. 
+
+#### Quality Assurance Committee (QAC)
+The QAC's main responsibility is to create/maintain an academic quality assurance framework, ensure the University of Edinburgh's achievement of external quality requirements such as the UK Quality Code, and to develop and review academic collaborations with partner institutions. [Link](https://registryservices.ed.ac.uk/academic-services/committees/quality-assurance/agendas-papers) to the QAC's agendas, papers, and minutes.
+
+<br />
+
+## Storage of *Agendas, Papers and Minutes*
+**Overview and Motivation:** The current storage of agendas, papers, and minutes on the University of Edinburgh's Registry Services Website are separated by committee, and finding related papers is not easily navigable. For instance, a paper from the Education Committee may reference a previous decision made in a paper from the Learning and Teaching Committee. In order to find a paper from the LTC archives (starting from the "Agendas, Papers and Minutes" section of the Education Committee page where users may have been viewing a paper), users must firs exit to the “Education Committee” homepage, then to “Committee archive,” then to “Learning and Teaching,” and finally to “Agendas, papers and minutes”. For a user who is not intimately familiar with the website's structure, there is a loss of time spent going on a wild goose trying to find where the past committee's papers are stored. The lack of centralization of all documents means users may spend many minutes scrolling through documents over 10 pages long trying to find relevant information. 
