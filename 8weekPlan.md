@@ -19,6 +19,7 @@
 ## Week 4
 * Add a search function to the web app so users can enter keywords and relevant Senate documents will be brought up
 * Add filtering, so users can filter by academic year, committee, etc. (dependent on feedback from the requirements gathering meeting) &rarr; requires being able to add tags to documents
+* Add a way for users to sort results, possibly by alphabetical order, oldest first, newest first, etc.
 
 ## Week 5
 * Add a spellcheck feature so that if users misspell keywords, the app will find a close match
@@ -36,3 +37,7 @@
 ## Week 8
 * Coding &rarr; Continue implementing suggested changes, polish project
 * Create formal documentation reflecting on project and prototype created
+
+## Additional notes
+* The order of implementation of the various features in weeks 3-6 are flexible; some may take longer/shorter to implement than expected (or may be eliminated) and thus may be shifted to a different week
+* Testing will be done throughout the process of implementing features rather than as a seperate task
