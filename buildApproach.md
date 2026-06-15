@@ -39,15 +39,21 @@ Compared to Drupal, Joomla falls short in terms of search. Drupal has a more mat
 
 ### **SharePoint
 
-<br/>
-
 ### **Recommendation for CMS's:
+
+<br/>
 
 ## Digital Asset Management System
 
-### **What Is a Digital Asset Management System?
-### **ResourceSpace
-### **Recommendation on using a DAM
+### What Is a Digital Asset Management System?
+A Digital Asset Managment (DAM) system is a type of software which is used for organizing, storing, and distributing digital files such as images, videos, and audio files. A benefit of DAM’s is centralizing media libraries, allowing for a streamlined workflow. It also manages versions and approvals, allowing teams to clearly keep track of what is a draft and what is a final product. Files stored in a DAM have attached metadata, creating a structured taxonomy design within an organization. Some examples of popular open-source DAM's include ResourceSpace and Pimcore.
+
+**DAM vs CMS:** Although DAM’s and CMS’s are both used for digital content management, CMS’s are more focused towards publishing and presenting content to user through a website while DAM’s are focused on organizing and storing content for internal structure. DAM's are often combined with CMS's rather than being used independently. The DAM is responsible for organizing and securely storing versions and media assets, while the CMS uses those assets to build and publish web pages.
+
+### Recommendation on using a DAM
+It is not advised to use a DAM for this project. Using a DAM would require sacrificing the desired user interface. The frontend interfaces of DAM’s are typically designed around asset management workflows rather than creating a database-style search experience as planned in the mockup. Additionally, it is difficult to add a customized frontend which would require additional work in the future should our prototype eventually be integrated into the university ecosystem. 
+
+Another issue with using a DAM is that they are designed for rich media and high volumes of content. DAM’s handle enterprise level tasks, organizing frequently-changing assets from a variety of teams across an organization. With less than 500 files to manage for our project, using a DAM would be overkill. A CMS alone has the capabilities of handling our requirements, so using a DAM on top of this is unnecessary. 
 
 <br/>
 
