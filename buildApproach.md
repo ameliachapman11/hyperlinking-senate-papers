@@ -30,7 +30,9 @@ WordPress is the world's leading CMS and is most often used for small websites s
 ### Drupal
 Drupal is an open-source CMS which uses drag and drop style page building tools, and is generally viewed as more flexible than others CMS's. Adding specialized functionality to a Drupal web application can typically be achieved using a module, a bundle of code (PHP, JavaScript, and CSS files) which can be added to a Drupal project via the admin dashboard of the website. There are over 40,000 freely available modules, supported and developed by the open-source community. Some existing modules that may be relevant to the develoment of this prototype include [Apache Solr Search](https://www.drupal.org/project/apachesolr) for the search backend and [Media Thumbnails PDF](https://www.drupal.org/project/media_thumbnails_pdf) for the UI. 
 
-While added flexibility is Drupal's biggest draw, it also results in a bigger learning curve than other CMS's&mdash;this runs the risk of having to abandon some of the desired features due to a limited timeline.
+While added flexibility is Drupal's biggest draw, it also results in a bigger learning curve than other CMS's&mdash;this runs the risk of having to abandon some of the desired features due to a limited timeline. This drawback can perhaps be mitigated by using Drupal's Agent Chatbot, which can help to structure and customize website content.
+
+An example of a Drupal-based website that contains a search interface highly similar to the one designed in the mockup is the [Ontario Search Commission](https://www.osc.ca/en). It includes filters for refining search results, sorting capabilities, each PDF paper hyperlinked, and an elegant user interface.  
 
 ### Joomla
 Joomla is another open-source CMS which, like Drupal, is written in PHP and uses MySQL as a database. Large-scale companies such as Ikea, Linux, and Holiday Inn use Joomla to power their sites. It is highly customizable, with almost ten thousand plug-ins developed by the community available for download. 
@@ -64,7 +66,7 @@ Another issue with using a DAM is that they are designed for rich media and high
 <br/>
 
 ## Overall Recommendation
-A CMS is advised to be used to build the web application. Although building from scratch offers maximum control over user interface, user experience, and search, all of the desired features for this project can be achieved using a content management system, which will significantly speed things up on the development side and has a lower learning curve. The drag-and-drop approach for the frontend of a CMS website means that we do not have to spend time fiddling with frontend and CSS frameworks to achieve essentially the same result&mdash;this time can instead be spent enhancing search on the backend.
+A CMS is advised to be used to build the web application. Although building from scratch offers maximum control over user interface, user experience, and search, all of the desired features for this project can be achieved using a content management system, which will significantly speed things up on the development side and has a lower learning curve. The drag-and-drop approach for the frontend of a CMS website means that we do not have to spend time fiddling with frontend and CSS frameworks to achieve essentially the same result&mdash;this time can instead be spent enhancing search on the backend. Using a CMS also ensures responsive web design, while with development from scratch, this is something that needs to be built in. 
 
 _Summary of Recommendations for CMS's:_
 * If search capabilities are most important: Drupal + Apache Tika + Apache Solr
