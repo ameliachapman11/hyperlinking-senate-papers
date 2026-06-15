@@ -44,8 +44,8 @@ The main drawback of using SharePoint when compared to other CMS’s lack of fle
 
 A benefit of using SharePoint beyond integration is hosting. Microsoft hosts SharePoint sites directly, while with other CMS’s, you have to host on an external provider. External providers are either free, which may have ads or be unreliable in terms of network speed, or are proprietary. 
 
-### **Recommendation on Using a CMS
-
+### Recommendation on Using a CMS
+If we choose to use a CMS for this project, the best option is either Drupal or SharePoint, depending on what stakeholders feel it is more important to prioritize. Drupal can easily be integrated with Apache Solr, providing advanced search capabilities which will help Senate members easily identify sections of past papers relevant to their research. It also provides the edge over Microsoft Search in areas such as fuzzy matching and stemming behavior. However, SharePoint is better if it is more important to prioritize integration with existing University of Edinburgh websites. University of Edinburgh websites are primarily built in either SharePoint or on EdWeb2, the official University of Edinburgh CMS. Another consideration is timeline—SharePoint has a more user-friendly entry point, while Drupal has a steeper learning curve for developers. If Drupal is chosen, some features may have to be dropped to accommodate the timeline. 
 
 <br/>
 
@@ -63,6 +63,14 @@ Another issue with using a DAM is that they are designed for rich media and high
 
 <br/>
 
-## **Overall Recommendation
+## Overall Recommendation
+A CMS is advised to be used to build the web application. Although building from scratch offers maximum control over user interface, user experience, and search, all of the desired features for this project can be achieved using a content management system, which will significantly speed things up on the development side and has a lower learning curve. The drag-and-drop approach for the frontend of a CMS website means that we do not have to spend time fiddling with frontend and CSS frameworks to achieve essentially the same result&mdash;this time can instead be spent enhancing search on the backend.
+
+_Summary of Recommendations for CMS's:_
+* If search capabilities are most important: Drupal + Apache Tika + Apache Solr
+* If integration with existing systems and timeline are most important: SharePoint + Microsoft Search
+
+<br/>
 
 ## **AI Acknowledgement
+ELM, the University of Edinburgh's official AI innovation platform, was used throughout the research process to gain suggestions for which frameworks and content management systems would be most relevant to this project. ELM was set to be GPT 5.4 for the model, and web search was enabled. ELM was also used to compare between various search engines and content management systems, and to understand their capabilities, such as the integration of Apache Solr with Joomla vs with Drupal. AI was used as a suggestion rather than a final decision point for the provided recommendation.
