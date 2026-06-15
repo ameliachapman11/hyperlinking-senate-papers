@@ -17,27 +17,33 @@ A Content Management System (CMS) is software which facilitates the creation, ed
 An additional feature of CMS's is that they provide capabilities for users with different permission levels across an organization to manage certain sections of content or data. This means admin staff and executives may have different privileges when it comes to managing the company's website. There are also real-time editing and preview capabilities, meaning when users make changes, they can preview content exactly as it will appear once published. Finally, CMS’s make it so metadata tags can easily be added to content, allowing for efficient search and filtering.
 
 ### General Structure
-If we were to pursue using a CMS to build the prototype, we would need to use it in combination with a text extraction software and a backend search engine. This project's primary focus is on search within Senate documents, and a CMS alone does not have the capabilities to perform text extraction from the PDF documents and full-text search. Full-text search has linguistic awareness and is more computationally efficient than doing literal phrase matching, which scans word-by-word. The project should be capable of handling aspects of advanced search such as relevance ranking, stemming, fuzzy matches, and synonyms.
+If we were to pursue using a CMS to build the prototype, we would need to use it in combination with a text extraction software and a backend search engine. This project's primary focus is on search within Senate documents, and a CMS alone does not have the capabilities to perform text extraction from the PDF documents and full-text search. Full-text search has linguistic awareness can handle aspects of advanced search such as relevance ranking, stemming, fuzzy matches, and synonyms. The flow of data would be as follows: CMS stores the PDFs and metadata &rarr; text extraction software extracts text from the PDFs &rarr; CMS sends that extracted text to the search index.
 
 ### **Search Engines and Text Extraction
 **Text Extraction:** Before a search engine can perform a full-text advanced search, the text must AHHH 
 
 ### WordPress
-WordPress is the world's leading CMS and is most often used for small websites such as travel or recipe blogs. While WordPress could support a basic repository of Senate papers, including PDF storage, manual metadata, and some filtering through plugins, it lacks the ability to easily integrate an strong search experience. Creating advance search would depend on multiple plugins or external tools, making the system more difficult to configure and maintain. WordPress is more suitable for applications which only require simple content publishing. 
+WordPress is the world's leading CMS and is most often used for small websites such as travel or recipe blogs. It is open-source. While WordPress could support a basic repository of Senate papers, including PDF storage, manual metadata, and some filtering through plugins, it lacks the ability to easily integrate an strong search experience. Creating advance search would depend on multiple plugins or external tools, making the system more difficult to configure and maintain. WordPress is more suitable for applications which only require simple content publishing. 
 
 ### Drupal
 Drupal is an open-source CMS which uses drag and drop style page building tools, and is generally viewed as more flexible than others CMS's. Adding specialized functionality to a Drupal web application can typically be achieved using a module, a bundle of code (PHP, JavaScript, and CSS files) which can be added to a Drupal project via the admin dashboard of the website. There are over 40,000 freely available modules, supported and developed by the open-source community. Some existing modules that may be relevant to the develoment of this prototype include [Apache Solr Search](https://www.drupal.org/project/apachesolr) for the search backend and [Media Thumbnails PDF](https://www.drupal.org/project/media_thumbnails_pdf) for the UI. 
 
-While added flexibility is Drupal's biggest draw, it also results in a bigger learning curve than other CMS's&rarr;this runs the risk of having to abandon some of the desired features due to a limited timeline.
+While added flexibility is Drupal's biggest draw, it also results in a bigger learning curve than other CMS's&mdash;this runs the risk of having to abandon some of the desired features due to a limited timeline.
 
 ### Joomla
 Joomla is another open-source CMS which, like Drupal, is written in PHP and uses MySQL as a database. Large-scale companies such as Ikea, Linux, and Holiday Inn use Joomla to power their sites. It is highly customizable, with almost ten thousand plug-ins developed by the community available for download. 
 
 Compared to Drupal, Joomla falls short in terms of search. Drupal has a more mature and widely used integration path for Solr than Joomla. While Joomla can still work with external search tools such as Solr and Tika, this is more likely to require custom development for integration, which increases project risk. Joomla offers native plugins with tools such as [OS PDF indexer](https://extensions.joomla.org/extension/os-pdf-indexer/) with Joomla Smart Search, but lacks some of the required advanced search capabilities that Solr offers. A possible benefit of Joomla over Drupal is that it is regarded to be easier to use and has a smaller learning curve, which may make it more viable for the timeline of this project. 
 
-### **SharePoint
+### SharePoint
+SharePoint is a proprietary CMS developed by Microsoft, and is intended for enterprise-level usage. Although SharePoint is proprietary, it is already used by the University of Edinburgh which gives it a distinct advantage from an integration standpoint. If SharePoint were to be used for the project, it would be structured as follows: SharePoint document library to store the PDF files with added metadata, Microsoft Search to perform full text search on the PDF’s (as opposed to Solr), and a SharePoint site for user interaction with the documents. For building the site’s UI, we would additionally use PnP Modern Search, which is a set of open-source SharePoint web parts designed for custom search pages. 
+
+The main drawback of using SharePoint when compared to other CMS’s lack of flexibility in terms of search engine choice. SharePoint site owners are essentially forced to use Microsoft Search; SharePoint does not natively integrate with other search engines such as Solr. Additionally, Microsoft Search is weaker than Solr when comparing capabilities like fuzzy matching, phrase matching, and page/chunk level indexing (displays something like “match on p. 64”). While it is easier out of the box, Microsoft Search does not allow for deeply tuning search. 
+
+A benefit of using SharePoint beyond integration is hosting. Microsoft hosts SharePoint sites directly, while with other CMS’s, you have to host on an external provider. External providers are either free, which may have ads or be unreliable in terms of network speed, or are proprietary. 
 
 ### **Recommendation on Using a CMS
+
 
 <br/>
 
