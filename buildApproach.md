@@ -2,9 +2,14 @@
 
 ## Build From Scratch
 
-### **General Structure
+### General Structure
+If we were to pursue this project from the ground up, decisions would need to be made regarding fullstack development: which frontend framework, backend framework, and database would be most suitable for creating the application? In addition to the frontend framework, which CSS framework would be best for a custom UI that adheres to the University of Edinburgh’s brand identity?
+
 ### **Links
+
 ### **Frameworks
+**Frontend:** CSS frameworks are software libraries that allow for easier, more standards-compliant web design than using CSS directly. Examples of popular CSS frameworks 
+
 ### **Recommendation on Building from Scratch
 
 <br/>
