@@ -2,15 +2,27 @@
 
 ## Build From Scratch
 
-### General Structure
-If we were to pursue this project from the ground up, decisions would need to be made regarding fullstack development: which frontend framework, backend framework, and database would be most suitable for creating the application? In addition to the frontend framework, which CSS framework would be best for a custom UI that adheres to the University of Edinburgh’s brand identity?
-
 ### **Links
 
-### **Frameworks
-**Frontend:** CSS frameworks are software libraries that allow for easier, more standards-compliant web design than using CSS directly. Examples of popular CSS frameworks 
+### General Structure
+If we were to pursue this project from the ground up, decisions would need to be made regarding fullstack development: which frontend framework, backend framework, and database would be most suitable for creating the application? In addition to the frontend framework, which CSS framework would be best for a custom UI that adheres to the University of Edinburgh’s brand identity? 
 
-### **Recommendation on Building from Scratch
+The general structure would consist of CSS framework + frontend framework + backend framework + database + PDF storage + text extraction + search engine. PDF storage would be done seperately from the database because storing directly in the database can lead to slower backups/restores and worse scalability. 
+
+### Frameworks
+**CSS:** CSS frameworks are software libraries that allow for easier, more standards-compliant web design than using CSS directly and are focused on the styling/aesthetics of a website. Examples of popular CSS frameworks include Bootstrap, Tailwind, and Bulma. For this project, Tailwind would be most suitable as it provides the opportunity to follow the branding identity of the university. Bootstrap and Bulma have pre-defined looks which can make a website instantly be recognizable as a Bootstrap site or Bulma site; we instead want to create an experience with the prototype where users can feel that they are using a *real* University of Edinburgh website. This will also streamline integration later down the line.
+
+**Frontend:** A frontend framework is a collection of pre-written code, components, and tools that help developers create the frontend (buttons, navigation, UX) of a web app more efficiently. Frontend frameworks also make it possible to dynamically update parts of a page without requiring full page reloads, resulting in a smoother experience. Frontend frameworks need to be used in combination with a CSS framework&mdash;frontend frameworks only handle structure and behavior, while a CSS framework is needed for styling. Some popular frontend frameworks include React, Angular, Vue, Svelte, and Next JS. For this project, Vue would be the most suitable as it has a smaller learning curve compared to other frontend frameworks, but still has the capabilities and scalability required for this project. 
+
+**Backend:** A backend framework is a collection of pre-written code, tools, and libraries which helps developers develop the backend (database communication, user authentication, routing) more efficiently. Some popular backend frameworks include Node JS, Django, FastAPI, and Spring Boot. For this project, Django is most suitable. Django is a Python-based framework which benefits from Python’s well-developed document-processing libraries (which is important to this application as it is based on processing PDF’s and then searching them). Although FastAPI is also built on Python, it is more so intended for developing API’s rather than a full web app, so Django remains as a better choice. 
+
+### Database and PDF Storage
+**Database:** In this application, the database would be used to store metadata for the Senate papers. Some examples of popular databases are PostgreSQL, MySQL, and MongoDB. As we are handling structured data that is not highly variable, it would be best to use a relational database (which eliminates MongoDB as an option). For this project, MySQL would be the most suitable option because, although simpler than PostgreSQL, it is able to handle the scope of this project where we are just storing the metadata such as committee and year. 
+
+**PDF storage:** As the Senate papers are frequently over 100 pages long, it is not a good idea to store them directly in the database as it degrades database performance. Instead, they would be stored in a seperate object storage such as AWS S3, Azure Blob Storage, or MiniIO. For this project, MiniIO is the most suitable as it is opensource, while the other two options are proprietary (being owned by Amazon and Microsoft, respectively). 
+
+### Recommendation on Building from Scratch
+If this project were to be pursued as a grounds-up project, the recommended build structure consists of the following: Tailwind + Vue + Django + MySQL + MiniIO + Apache Tika + Apache Solr. For more information on why Tika and Solr were chosen, see the *Text Extraction and Search Engines* section of *Content Management Systems*. 
 
 <br/>
 
@@ -47,9 +59,9 @@ Compared to Drupal, Joomla falls short in terms of search. Drupal has a more mat
 ### SharePoint
 SharePoint is a proprietary CMS developed by Microsoft, and is intended for enterprise-level usage. Although SharePoint is proprietary, it is already used by the University of Edinburgh which gives it a distinct advantage from an integration standpoint. If SharePoint were to be used for the project, it would be structured as follows: SharePoint document library to store the PDF files with added metadata, Microsoft Search to perform full-text search on the PDF’s (as opposed to Solr), and a SharePoint site for user interaction with the documents. For building the site’s UI, we would additionally use PnP Modern Search, which is a set of open-source SharePoint web parts designed for custom search pages. 
 
-The main drawback of using SharePoint when compared to other CMS’s lack of flexibility in terms of search engine choice. SharePoint site owners are essentially forced to use Microsoft Search; SharePoint does not natively integrate with other search engines such as Solr. Additionally, Microsoft Search is weaker than Solr when comparing capabilities like fuzzy matching, phrase matching, and page/chunk level indexing (displays something like “match on p. 64”). While it is easier out of the box, Microsoft Search does not allow for deeply tuning search. 
+The main drawback of using SharePoint when compared to other CMS’s lack of flexibility in terms of search engine choice. SharePoint site owners are essentially forced to use Microsoft Search; SharePoint does not natively integrate with other search engines such as Solr. Additionally, Microsoft Search is weaker than Solr when comparing capabilities like fuzzy matching, phrase matching, and page/chunk level indexing (displaying something like “match on p. 64”). While it is easier out of the box, Microsoft Search does not allow for deeply tuning search. 
 
-A benefit of using SharePoint beyond integration is hosting. Microsoft hosts SharePoint sites directly, while with other CMS’s, you have to host on an external provider. External providers are either free, which may have ads or be unreliable in terms of network speed, or are proprietary. 
+A benefit of using SharePoint beyond integration is hosting. Microsoft hosts SharePoint sites directly, while with other CMS’s, you have to host on an external provider. External providers are either free, but may have ads or be unreliable in terms of network speed, or are proprietary. 
 
 ### Recommendation on Using a CMS
 If we choose to use a CMS for this project, the best option is either Drupal or SharePoint, depending on what stakeholders feel it is more important to prioritize. Drupal can easily be integrated with Apache Solr, providing advanced search capabilities which will help Senate members easily identify sections of past papers relevant to their research. It also provides the edge over Microsoft Search in areas such as fuzzy matching and stemming behavior. However, SharePoint is better if it is more important to prioritize integration with existing University of Edinburgh websites. University of Edinburgh websites are primarily built in either SharePoint or on EdWeb2, the official University of Edinburgh CMS. Another consideration is timeline—SharePoint has a more user-friendly entry point, while Drupal has a steeper learning curve for developers. If Drupal is chosen, some features may have to be dropped to accommodate the timeline. 
@@ -79,5 +91,5 @@ _Summary of Recommendations for CMS's:_
 
 <br/>
 
-## **AI Acknowledgement
+## AI Acknowledgement
 ELM, the University of Edinburgh's official AI innovation platform, was used throughout the research process to gain suggestions for which frameworks and content management systems would be most relevant to this project. ELM was set to be GPT 5.4 for the model, and web search was enabled. ELM was also used to compare between various search engines and content management systems, and to understand their capabilities, such as the integration of Apache Solr with Joomla vs with Drupal. AI was used as a suggestion rather than a final decision point for the provided recommendation.
