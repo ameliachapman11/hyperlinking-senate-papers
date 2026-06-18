@@ -69,6 +69,8 @@ On the frontend, when a user clicks on a link for a specific paper, it will brin
 ### Conversion of PDF to XML
 Senate papers are currently stored as PDFs. In order for the web application to make use of XML files in the automatic hyperlink generation process, they need to be be converted. This can be done manually using proprietary software like Adobe Acrobat Pro, open-source software like Apache Tika, or Python libraries like pdfplumber and pdfminer. A concern with automatic conversion to XML is that it may lead to messy papers/tags; if the document is not well-structured then it may not be helpful in further steps. 
 
+As the papers are text-based rather than scanned, software that focuses on Optical Character Recognition (OCR) do not have added beneficiality. 
+
 ### **XPath
 ### **XML-focused CMSs
 ### **Amended Workflow
