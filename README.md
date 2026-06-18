@@ -7,3 +7,4 @@ The goal of the project is to evaluate the University of Edinburgh's storage of 
 * The [Overview and Motivation](overviewAndMotivation.md) file outlines the current issues with the University of Edinburgh's Senate's file storage and search, as well as the goals to be achieved in the new prototyped application
 * The [Design Process](designProcess.md) file describes the process in designing the Figma mockup of the application and includes an image of the mockup itself
 * The [Build Approach](buildApproach.md) file provides recommendations for possible build approaches for the web evaluation, including evalutations of various from-scratch and out-of-the-box approaches, including CMS's such as Drupal
+* The [Hyperlinking](hyperlinking.md) file provides a workflow for how automated hyperlinking of references between papers would be implemented in the web application and evaluates a possible usage of XML files for this purpose
