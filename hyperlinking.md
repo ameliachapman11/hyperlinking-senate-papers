@@ -12,7 +12,7 @@ There is currently a lack of existing technologies that can automatically detect
 Upload each PDF paper into the CMS and manually enter metadata such as committee, academic year, meeting date, source URL, etc.
 
 ### 2. Trigger Processing Pipeline
-Once the PDF is uploaded, the CMS will trigger a backend processing job. This can either be done automatically or added to a queue which is then processed in the background. Taking Drupal as an example, a custom Drupal module will need to be developed using PHP and YAML files which tells the CMS that once the file is uploaded to then extract text, split it into page-level text units, etc. (the rest of the workflow). JSON files may also be used as part of the module for exchanging structured data with the Solr/Tika APIs, such as creating documents for the search index. 
+Once the PDF is uploaded, the CMS will trigger a backend processing job. This can either be done automatically or added to a queue which is then processed in the background. Taking Drupal as an example, a custom Drupal module will need to be developed using PHP and YAML files which tells the CMS that once the file is uploaded to then extract text, split it into page-level text units, etc. (the rest of the workflow). JSON files may also be used as part of the module for exchanging structured data with the Solr/Tika, such as creating documents for the search index. 
 
 ### 3. Extract Text via Text Extraction Software
 Extract text with extraction software such as Apache Tika or PDFBox. The text should be extracted page by page to allow for later finding the most relevant page for a hyperlink. To then reconstruct the full document text (which will be used for a regular keyword search enquiry by a user), the extracted text for all pages can be joined together. The extracted text is stored in the backend/memory temporarily before records for the search engine are created.
@@ -27,7 +27,7 @@ The documents on the per-page level should contain the extracted page text, inhe
 It would also be helpful to add a field to denote record type so that when you are querying Solr you can specify whether you want to search page-level or document-level. This may be done through something like `record_type = document` or `record_type = page`.
 
 ### 5. Send Searchable Documents to the Search Engine
-When you send documents to a search engine, they are automatically added to the core/collection and indexed. A document being indexed means that it is broken down into searchable terms and organizing it into a data structure much like an index in a back of a textbook, where you can search up a word and it tells you relevant pages. You can verify that records have been correctly added and with the correct metadata by opening the Solr Admin UI and running a query for known metadata.
+When you send documents to a search engine, they are automatically added to the core/collection and indexed. A document being indexed means that it is broken down into searchable terms and organized it into a data structure much like an index in a back of a textbook, where you can search up a word and it tells you relevant pages. We can verify that records have been correctly added and with the correct metadata by opening the Solr Admin UI and running a query for known metadata.
 
 ### 6. Detect References to Other Papers
 This step takes place in backend logic, again likely through a custom Drupal module. It tries to find phrases with combinations of committee name, month/year, paper code, etc.&mdash;anything that can be used to match the metadata of another paper&mdash;and then could create candidate reference objects to be matched in the next step. 
@@ -69,19 +69,42 @@ On the frontend, when a user clicks on a link for a specific paper, it will brin
 ### Conversion of PDF to XML
 Senate papers are currently stored as PDFs. In order for the web application to make use of XML files in the automatic hyperlink generation process, they need to be be converted. This can be done manually using proprietary software like Adobe Acrobat Pro, open-source software like Apache Tika, or Python libraries like pdfplumber and pdfminer. A concern with automatic conversion to XML is that it may lead to messy papers/tags; if the document is not well-structured then it may not be helpful in further steps. 
 
-As the papers are text-based rather than scanned, software that focuses on Optical Character Recognition (OCR) do not have added beneficiality. 
+As the papers are text-based rather than scanned, software that focuses on Optical Character Recognition (OCR) does not have added beneficiality. 
 
-### **XPath
-### **XML-focused CMSs
-### **Amended Workflow
-If XML were to be used, the workflow would stay the same in general principles, with a few caveats. The main change would be from using a text extraction software such as Apache Tika to 
+### XPath
+XPath is a querying language, much like SQL, that is used to identify and extract information from particular parts of an XML document. It relies on XML tags, so it is necessary to have specific and consistent XML tags. XPath is not suitable for this application because works best with documents that were initially created as XML files, which are guaranteed to have consistent and purposeful tagging. The XML files we would achieve with an automatic conversion from PDF are unlikely to be cleanly tagged&mdash;and it is definitely not worth the manpower required to manually convert each Senate paper into an XML file. If we *were* to use XPath, it would likely be for the purposes of tasks like helping to find all paragraphs that contain a committee name or extract candidate references.
 
-### **Recommendation on Using XML
+### XML-focused CMSs
+There are many CMSs that are marketed towards managing XML files specifically, such as Paligo, PluXml, and Publish One. An XML-CMS breaks content down into small, reusable components (chunks of XML) rather than storing content as whole pages/documents. An XML-focused CMS is not recommended to be used for this web application because of the conversion from PDF to XML required. As previously stated, the XML tags generated are unlikely to be clean and consistent, which means that the web app loses the benefits of using an XML-specific CMS. 
+
+### Amended Workflow
+If XML were to be used, the workflow would stay the same in general principles, with a few caveats. The main change would be from using extracted text (from a text extraction software such as Tika) to create the record for the search engine to using an XML file. Steps that differ from the non-XML-based workflow are bolded.
+
+1. Add papers to the CMS
+2. Trigger processing pipeline
+3. **Convert each PDF to XML and store in the CMS**
+4. **Extract document text from XML** 
+6. Search record preparation
+7. Send documents to the search engine
+8. Detect candidate references to other papers
+9. Match each reference to a target paper
+10. Find most relevant target page and generate hyperlink
+11. Apply confidence rule
+12. **Add hyperlinks back into XML** &rarr; edit the XML file stored in the CMS and add the generated hyperlinks inline. The PDF should be left unchanged as an original document.
+13. **HTML rendering** &rarr; although XML documents can technically be viewed directly, they are not user-friendly to look at. Instead, the XML documents are rendered as HTML for easy user interaction.
+14. Add to frontend &rarr; the page for each paper should show the original PDF, metadata, and new hyperlinked version (HTML)
+
+### Recommendation on Using XML
+The primary benefit of using XML would be to have a structured intermediate representation of the document which can make it easier to insert inline hyperlinks and render a linked HTML version. Without using XML or HTML, it is more realistic to have a referenced papers section than to edit the PDF document directly. However, since we are automatically converting from PDF to XML, it is unlikely that tagging is done in a clear and purposeful manner which renders other benefits of XML unhelpful. Could we have clean tagging, we would also benefit from being able to create section-level hyperlinks and richer document analysis (being able to analyze headings or agendas specifically rather than just the general document). 
 
 </br>
 
-## **Possible Usage of an AI Agent
+## Possible Usage of an AI Agent
+At current, the outlined workflows only identify obvious references and is limited to references between Senate papers. A possible expansion to this application is identifying ambiguous references, references with inconsistent phrasing, and hyperlinking to a wider domain of sites (perhaps to other sites within the University of Edinburgh ecosystem). This could be possible through an AI agent, which can be implemented either using an API (proprietary) or a local model (open-source). 
+
+A possible concern with using an AI agent is higher cost and that the agent should not add hyperlinks blindly, which brings back the issue of an admin staff as detailed in step 9 of *Workflow of Automating Hyperlinking*.
 
 </br>
 
-## **AI Acknowledgement
+## AI Acknowledgement
+ELM, the University of Edinburgh's official AI innovation platform, was used throughout the research process to understand possible ways of automating hyperlinking, provide suggestions for the workflow, and gain further understanding of how each step would be implemented on the backend. ELM was set to be GPT 5.4 for the model, and web search was enabled. AI was used as a suggestion rather than a final decision point for the workflows, with deviations particularly made in the XML version of the workflow. All descriptions were written by hand.
