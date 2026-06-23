@@ -61,7 +61,48 @@ The following is an example of how a custom XML schema may be implemented to con
 
 </br>
 
-## **Conversion from PDF to XML
+## Conversion from PDF to XML
+
+### Python library evaluation
+The first step of converting from PDF to XML is extracting the text with awareness of what may be a header, paper code, body paragraph, etc. There are a wide variety of Python libraries which are targeted towards text extraction of PDF files. The following is a description of some of the most popular ones:
+
+PyMuPDF:
+* Wraps the MuPDF rendering engine
+* Main strengths:
+   * Runs on C so faster than other libraries
+   * Good at extracting text with positional data and font information, rendering PDF’s as images, image extraction
+* For server-side use requires either open-sourcing your code or purchasing a commercial license from Artifex &rarr; this should not a problem for our application as it will be publicly available
+
+pdfminer.six
+* Python 3 fork of the original pdfminer library
+* Main strengths: character-level extraction, extracting text with positional data and font information, no dependencies
+* Downsides: slower than PyMuPDF since it processes at the character level, lacks table detection
+
+Pdfplumber
+* Built on top of pdfminer.six
+* Main strengths: table extraction, character-level extraction, extracting within a specified region of a page 
+* Downside: slower than PyMuPDF since it processes at the character level, no PDF writing/merging
+
+Pypdf
+* Main strengths: merge/split, zero dependencies
+* Downside: does not return positional and font data, has trouble with complex layouts and multicolumn text, more basic than other options
+
+Unstructured
+* Creates semantically labelled chunks (Title, Paragraph, etc.) by applying rule-based heuristics
+* Downside:
+   * Although it retains data about position, does not retain information about font
+   * Requires rendering the PDF page as an image and using AI to extract a table (higher computational cost)
+
+**Overall recommendation:** 
+If a Python library is used for text extraction and PDF conversion, the best option is to use PyMuPDF. PyMuPDF returns detailed information about the text, including the font name, font size, and whether it is bolded/italicized, without compromising speed. As there are many instances of tables throughout the Senate papers, we need to include this ability in our consideration. Although PyMuPDF is considered to be weaker in table extraction than pdfplumber, it includes a `find_tables()` function which handles text wrapping inside explicit grid lines well, which is our primary use case. If tables are being flattened badly, it is possible to later integrate pdfplumber, but using PyMuPDF alone is the best starting place.
+
+### Building an XML Tree (lxml)
+While PyMuPDF provides the ability to recognize precise structure of the document, it cannot natively create an XML document with a custom schema from this information. From the font and positional data provided by PyMuPDF, we need to create rules to identify certain elements of the paper. For example, the combination of a larger font + bold + in top right corner of page = paper code. Or small text + bottom of page = footer. From the identified element, we can add in the desired XML tag with the extracted text from that section.
+
+As XMLs follow a nested tree structure, we have to keep track of where the opening and closing tags. One method of keeping track of where the tags should start and end is by using a stack. However, a cleaner method would be to use lxml. 
+
+
+### **Conversion Pipeline
 
 </br>
 
@@ -75,7 +116,7 @@ If using XML became unrealistic (perhaps due to timeline constraints), an altern
 </br>
 
 ## Possible Usage of an AI Agent
-At present, the outlined workflows only identifies obvious references between Senate papers. A possible expansion to this application is identifying ambiguous references, references with inconsistent phrasing, and hyperlinking to a wider domain of sites (perhaps to other sites within the University of Edinburgh ecosystem). This could be possible through an AI agent, which can be implemented either using an API (proprietary) or a local model (open-source). 
+At present, the outlined workflows only identifies obvious references between Senate papers. A possible expansion to this application is identifying ambiguous references, references with inconsistent phrasing, and hyperlinking to a wider domain of sites (perhaps to other sites within the University of Edinburgh ecosystem). This could be possible through an AI agent, which can be implemented either using an API (proprietary) or a local model (open-source). The agent could also be added in to a specific part of the workflow, such as partitioning/sectioning text from the PDF documents when being converted to XML.
 
 A possible concern with using an AI agent is higher cost and that the agent should not add hyperlinks blindly, which again brings up the issue of an admin staff.
 
