@@ -1,110 +1,87 @@
 # Automating Hyperlinking
-**Goal:** One of the primary goals of this project is to research how adding hyperlinks between Senate papers may be automated. For the time being, we will focus on obvious references between papers. One example is in the E-Senate *Agenda and Papers* file from the September 23-27, 2023 session of the E-Senate: section e-S 23/24 1B mentions that the "Senate Quality Assurance Committee (SQAC) considered the paper at its meeting on 12 September 2023." This would be an appropriate place where a hyperlink would be automatically added. 
+## Goal and Overview
+### Goal
+One of the primary goals of this project is to research how adding hyperlinks between Senate papers may be automated. For the purpose of the prototype, we will be focusing on a subsection of the wider document library, looking only at the Senate and Education Committee (SEC) papers for the 2023-2024 academic year.
 
 There is currently a lack of existing technologies that can automatically detect references between a set of papers and generate hyperlinks between them, so a custom workflow/logic has to be implemented. 
 
-</br>
+### Paper Codes and File Names
+The hyperlinks will be widely based on paper codes, whose notation provides information about the committee, academic year, meeting number, and paper number. For instance, a paper code of S 23/24 3D indicates it is a Senate document (denoted by S), part of the 2023-2024 academic year (denoted by 23/24), part of the third meeting (denoted by the 3 in 3D), and is the fourth document in that meeting (denoted by the D in 3D). The papers for each meeting follow alphabetical order, with A being the first paper, B being the second paper, and so on. In the hyperlinking process, the information gathered from a paper code will used to identify the metadata of another paper and generate a link to it.
 
-## Workflow of Automating Hyperlinking
-**Note:** In the following workflow, it is assumed that the recommended build approach of using a CMS such as Drupal and a search engine such as Apache Solr is taken, as detailed in the [Build Approach](buildApproach.md) file.  
+The documents also follow a strict naming schema which provides information about committee, paper type, and meeting date/duration (as electronic meetings take place over multiple days. The committee abbreviations are SEN for Senate and SEC for Senate Education Committee. They are as follows: 
+* Meetings on a single day:
+   * Agendas and papers: `&lt;committee-abbreviation&gt;\_AP\_&lt;date of meeting&gt;.pdf`
+   * Minutes: `&lt;committee-abbreviation&gt;\_M\_&lt;date of meeting&gt;.pdf`
+* Meetings over multiple days (electronic):
+   * Agendas and papers: `&lt;committee-abbreviation&gt;\_AP\_&lt;start&gt;_&lt;end>_e.pdf`
+   * Minutes: `&lt;committee-abbreviation&gt;\_M\_&lt;start&gt;_&lt;end&gt;_e.pdf`
 
-### 1. Add Papers to the CMS
-Upload each PDF paper into the CMS and manually enter metadata such as committee, academic year, meeting date, source URL, etc.
-
-### 2. Trigger Processing Pipeline
-Once the PDF is uploaded, the CMS will trigger a backend processing job. This can either be done automatically or added to a queue which is then processed in the background. Taking Drupal as an example, a custom Drupal module will need to be developed using PHP and YAML files which tells the CMS that once the file is uploaded to then extract text, split it into page-level text units, etc. (the rest of the workflow). JSON files may also be used as part of the module for exchanging structured data with the Solr/Tika, such as creating documents for the search index. 
-
-### 3. Extract Text via Text Extraction Software
-Extract text with extraction software such as Apache Tika or PDFBox. The text should be extracted page by page to allow for later finding the most relevant page for a hyperlink. To then reconstruct the full document text (which will be used for a regular keyword search enquiry by a user), the extracted text for all pages can be joined together. The extracted text is stored in the backend/memory temporarily before records for the search engine are created.
-
-### 4. Prepare Documents for Search Engine
-Search engines such as Apache Solr store documents in a core or a collection, which acts like a database. Documents consist of multiple fields, which can include the text of the document itself along with various metadata fields. We have to prepare records to be sent to the search engine before it can be stored and indexed. As for reasons previously stated, we are looking to have documents both on the whole-paper level and on the page level, so we have to prepare documents for each. 
-
-The documents on the whole-paper level should contain the full extracted and concatenated text along with metadata fields inherited from the parent PDF document stored in the CMS. This may include document ID, title, committee, academic year, meeting date, and source URL/file path. 
-
-The documents on the per-page level should contain the extracted page text, inherited parent metadata (see above), along with additional metadata fields for identifying which page the document corresponds to. This may include page record ID, page number, and parent document ID (to know which paper the page is part of).
-
-It would also be helpful to add a field to denote record type so that when you are querying Solr you can specify whether you want to search page-level or document-level. This may be done through something like `record_type = document` or `record_type = page`.
-
-### 5. Send Searchable Documents to the Search Engine
-When you send documents to a search engine, they are automatically added to the core/collection and indexed. A document being indexed means that it is broken down into searchable terms and organized it into a data structure much like an index in a back of a textbook, where you can search up a word and it tells you relevant pages. We can verify that records have been correctly added and with the correct metadata by opening the Solr Admin UI and running a query for known metadata.
-
-### 6. Detect References to Other Papers
-This step takes place in backend logic, again likely through a custom Drupal module. It tries to find phrases with combinations of committee name, month/year, paper code, etc.&mdash;anything that can be used to match the metadata of another paper&mdash;and then could create candidate reference objects to be matched in the next step. 
-
-**Note:** This step is interchangable with steps 4-5. Since detecting references to other papers is using the same extracted text that is used to make the documents for the search engine, either can be done first. 
-
-### 7. Match the Reference to a Target Paper
-After detecting a candidate reference, the backend (in the same Drupal module) matches it to a known paper using extracted clues such as committee or meeting date. This matching can use either the metadata in the CMS or the metadata indexed in the search engine. While CMS metadata benefits from being the authoritative source and does not rely on the search engine being up to date, using the search engine metadata fits more naturally with the rest of the search pipeline.
-
-### 8. Find Most Relevant Target Page and Generate Hyperlink
-Hyperlinks do not have to be just to the beginning of documents, but can link to specific pages. This step queries the search engine to find which page of the referenced paper should be used for the hyperlink. The backend should take the local context around the reference (such as the current section heading, current sentence, or nearby sentences) and then query the search engine which will return the best-matching page. The search engine should automatically handle normalization (making text all lowercase, removing stop words, etc.) as part of its indexing/query process.
-
-A practical example of this concept is say that there is a phrase in a Senate paper that says "...the October 2024 meeting of the APRC..." and elsewhere in the sentence it mentions "the School of Literatures, Languages, & Cultures." In the paper for the October 2024 meeting of the APRC, the search engine will find the page most relevant to literature, languages, and cultures and return it. This is the proposed page to be hyperlinked.
-
-This step should also generate a hyperlink at the page level, which includes a link to certain page of the referenced paper and an appropriate link title based on the original identified phrase for the candidate reference.
-
-### 9. Apply a Confidence Rule To Accept/Reject Suggested Hyperlink
-Although the previous step suggested a specific page to be hyperlinked to for the reference, this should not be accepted blindly. Instead, the backend should implement a confidence rule. It would be along the following lines:
-* If one page is clearly the best match, create a page-level link
-* If the match is weak, only link to the start of the document
-* If no reliable match exists, do not create a hyperlink
-
-**How to determine if something is a good match?** Example heuristics could use the relevance score of the top result, the gap between scores of the top and second result, whether an exact phrase or heading terms matched, etc.
-
-**Why use a confidence rule?** Another option would be to have the program just suggest links and have a human verify each one manually. However, this would require having admin accounts (perhaps using university emails and and SSO) and developing a separate admin interface to go along with it. There also the additional concerns that may not be an appropriate staff member at the university to perform this job and that the application needs to have enhanced security for storing confidential login details. By using a confidence rule, we are treating creating hyperlinks as an pre-publication data processing step. *Note: the downside of a confidence rule is that when new papers are added later, we need to rerun the pipeline & redeploy.*
-
-### 10. Add Generated Hyperlinks to Metadata
-All accepted hyperlinks for a paper should be added to the CMS as metadata. There should be a metadata field for a list of hyperlink records which will contained the hyperlinks for all referenced papers for a specific paper. It would also be helpful for a hyperlink record to contain other data such as target document ID (which paper is being referenced), target page number, confidence score, link type (page-level or document-level). The hyperlink itself can be implemented as a Drupal Link field, HTML anchor tag, etc.
-
-### 11. Add to Frontend
-On the frontend, when a user clicks on a link for a specific paper, it will bring up a page showing metadata, a link to the original PDF or a way to view it, and a section for related/referenced papers. All hyperlinks generated throughout the previous steps will be included in the referenced papers section. Choosing to have a referenced papers section as opposed to adding the hyperlink back into the text is a safer approach than rewriting the PDF and also no longer needs a seperate XML and HTML document for each paper.
-
-*Note: In the XML section, we will explore an alternative solution where hyperlinks are embedded back into the text.*
+### Hyperlink Locations
+The following are particular places in which hyperlinks should automatically be added:
+* Each item in the minutes should link back to the item in the agendas and papers, based on the paper code
+* Each item in the agenda and papers should link to the item's reference in the minutes, based on the paper code
+* Any other references of a specific paper code should link to the relevant document in the agendas and papers
+* Obvious references between papers such as is in the E-Senate *Agenda and Papers* file from the September 23-27, 2023 session of the E-Senate: section e-S 23/24 1B mentions that the "Senate Quality Assurance Committee (SQAC) considered the paper at its meeting on 12 September 2023."
 
 </br>
 
-## Possible Usage of XML files
+## Alternative Forms of Storing Files
+Editing the source PDF file can result in breaking structural integrity and corrupting existing formatting. We want to instead keep the source PDF as an original, unaltered document, and produce a new hyperlinked version which users can reference to speed up research time. The final hyperlinked version of the document will likely be rendered as HTML rather than being converted back to a PDF. Rendering an alternative method of file storage (XML or JSON) as PDF would require using HTML as an intermediary stage, so it is easier to stop at HTML rather than converting original PDF &rarr; XML/JSON &rarr; HTML &rarr; PDF.
 
-### Conversion of PDF to XML
-Senate papers are currently stored as PDFs. In order for the web application to make use of XML files in the automatic hyperlink generation process, they need to be be converted. This can be done manually using proprietary software like Adobe Acrobat Pro, open-source software like Apache Tika, or Python libraries like pdfplumber and pdfminer. A concern with automatic conversion to XML is that it may lead to messy papers/tags; if the document is not well-structured then it may not be helpful in further steps. 
+### XML as an Intermediary File Stage
+Using XML as an intermediary file stage allows for custom tagging schema which can be helpful in locating text elements like headings, which can then identify the start of a paper. The metadata can be stored as dedicated elements at the top of the file, such as `<committeeName>SEN<\committeeName>`. XML also naturally supports mixed content, which makes it easy to replace reference with an inline link using an href/target tag. This can then be rendered cleanly to html as an `<a>` tag. The possible downside of using XML is that is is slower than something like JSON and can result in a larger file size.
 
-As the papers are text-based rather than scanned, software that focuses on Optical Character Recognition (OCR) does not have added beneficiality. 
+### JSON as an Intermediary File Stage
+With JSON, metadata would be stored as key-value pairs (for example, "committeeName": "SEN") and there would be nested objects for sections/items. Although JSON does not offer custom tagging in the traditional sense like XML, it is possible to create custom field names and nested structures to represent the same ideas. JSON is particularly well known for API's and is also faster than XML. However, the main downside of using JSON is adding hyperlinks, which is important to this applicaiton. Since text in JSON is usually stored as a single flat string, adding an inline link requires breaking the string into arrays of text fragments and link objects. This is more awkward to generate and maintain when compared to XML.
 
-### XPath
-XPath is a querying language, much like SQL, that is used to identify and extract information from particular parts of an XML document. It relies on XML tags, so it is necessary to have specific and consistent XML tags. XPath is not suitable for this application because works best with documents that were initially created as XML files, which are guaranteed to have consistent and purposeful tagging. The XML files we would achieve with an automatic conversion from PDF are unlikely to be cleanly tagged&mdash;and it is definitely not worth the manpower required to manually convert each Senate paper into an XML file. If we *were* to use XPath, it would likely be for the purposes of tasks like helping to find all paragraphs that contain a committee name or extract candidate references.
+### Conversion Directly to HTML
+If we skipped using an intermediary file storage and instead rendered the hyperlinked file directly as HTML, a few issues arise. First, we would have to encode structure as CSS classes rather than with custom tags, which makes it harder to query. Second, if we later need to add a new field to the schema or alter the HTML structure, it would require regenerating everything from the PDF rather than just re-rendering the XML, which is a slower process. Finally, injecting the generated hyperlinks into the HTML requires using regex matching over the whole HTML file, which is error prone. Although eliminating an intermediary step would result in a cleaner workflow, it is more difficult to create a well-structured file for processing text and creating hyperlinks.
 
-### XML-focused CMSs
-There are many CMSs that are marketed towards managing XML files specifically, such as Paligo, PluXml, and Publish One. An XML-CMS breaks content down into small, reusable components (chunks of XML) rather than storing content as whole pages/documents. An XML-focused CMS is not recommended to be used for this web application because of the conversion from PDF to XML required. As previously stated, the XML tags generated are unlikely to be clean and consistent, which means that the web app loses the benefits of using an XML-specific CMS. 
+### Recommendation
+The best choice for alternative file storage beyond PDF's is to use XML, and later to generate HTML from this. The flexibility that XML offers for custom structure will be helpful for querying paper contents and generating hyperlinks. It will be easier to query and maintain than direct converson to HTML, and will be easier to insert inline links than JSON.
 
-### Amended Workflow
-If XML were to be used, the workflow would stay the same in general principles, with a few caveats. The main change would be from using extracted text (from a text extraction software such as Tika) to create the record for the search engine to using an XML file. Steps that differ from the non-XML-based workflow are bolded.
+The following is an example of how a custom XML schema may be implemented to contain the relevant metadata, paper structure, etc:
+```
+<committeeDoc>
+<documentType> AP <\documentType>
+<committeeName> SEN <\committeeName>
+<committeeMeetingData> 2024-05-22 </committeeMeetingData>
+<committeeYear> 2023/4 </committeeYear>
+<meetingNumber> 3 </meetingNumber>
+<items>
+<agendaItem number="1" paper = "S 23/24 3A">
+<metadata> ... </metadata>
+<content> ... </content>
+<\agendaItem>
+     ...
+     ...
+<\items>
+<\committeeDoc>
+```
 
-1. Add papers to the CMS
-2. Trigger processing pipeline
-3. **Convert each PDF to XML and store in the CMS**
-4. **Extract document text from XML** 
-6. Search record preparation
-7. Send documents to the search engine
-8. Detect candidate references to other papers
-9. Match each reference to a target paper
-10. Find most relevant target page and generate hyperlink
-11. Apply confidence rule
-12. **Add hyperlinks back into XML** &rarr; edit the XML file stored in the CMS and add the generated hyperlinks inline. The PDF should be left unchanged as an original document.
-13. **HTML rendering** &rarr; although XML documents can technically be viewed directly, they are not user-friendly to look at. Instead, the XML documents are rendered as HTML for easy user interaction.
-14. Add to frontend &rarr; the page for each paper should show the original PDF, metadata, and new hyperlinked version (HTML)
+</br>
 
-### Recommendation on Using XML
-The primary benefit of using XML would be to have a structured intermediate representation of the document which can make it easier to insert inline hyperlinks and render a linked HTML version. Without using XML or HTML, it is more realistic to have a referenced papers section than to edit the PDF document directly. However, since we are automatically converting from PDF to XML, it is unlikely that tagging is done in a clear and purposeful manner which renders other benefits of XML unhelpful. Could we have clean tagging, we would also benefit from being able to create section-level hyperlinks and richer document analysis (being able to analyze headings or agendas specifically rather than just the general document). 
+## **Conversion from PDF to XML
+
+</br>
+
+## **Workflow
+
+</br>
+
+## **Alternative solution (non-XML)
+If using XML became unrealistic (perhaps due to timeline constraints), an alternative solution would be to eliminate XML from the workflow and produce a "Referenced Papers" section in the paper's page on the website. 
 
 </br>
 
 ## Possible Usage of an AI Agent
-At current, the outlined workflows only identify obvious references and is limited to references between Senate papers. A possible expansion to this application is identifying ambiguous references, references with inconsistent phrasing, and hyperlinking to a wider domain of sites (perhaps to other sites within the University of Edinburgh ecosystem). This could be possible through an AI agent, which can be implemented either using an API (proprietary) or a local model (open-source). 
+At present, the outlined workflows only identifies obvious references between Senate papers. A possible expansion to this application is identifying ambiguous references, references with inconsistent phrasing, and hyperlinking to a wider domain of sites (perhaps to other sites within the University of Edinburgh ecosystem). This could be possible through an AI agent, which can be implemented either using an API (proprietary) or a local model (open-source). 
 
-A possible concern with using an AI agent is higher cost and that the agent should not add hyperlinks blindly, which brings back the issue of an admin staff as detailed in step 9 of *Workflow of Automating Hyperlinking*.
+A possible concern with using an AI agent is higher cost and that the agent should not add hyperlinks blindly, which again brings up the issue of an admin staff.
 
 </br>
 
 ## AI Acknowledgement
 ELM, the University of Edinburgh's official AI innovation platform, was used throughout the research process to understand possible ways of automating hyperlinking, provide suggestions for the workflow, and gain further understanding of how each step would be implemented on the backend. ELM was set to be GPT 5.4 for the model, and web search was enabled. AI was used as a suggestion rather than a final decision point for the workflows, with deviations particularly made in the XML version of the workflow. All descriptions were written by hand.
+
+I would also like to acknowledge my advisor for writing the example XML schema and explanation of the structure of file names.
