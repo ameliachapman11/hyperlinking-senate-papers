@@ -94,15 +94,36 @@ Unstructured
    * Requires rendering the PDF page as an image and using AI to extract a table (higher computational cost)
 
 **Overall recommendation:** 
-If a Python library is used for text extraction and PDF conversion, the best option is to use PyMuPDF. PyMuPDF returns detailed information about the text, including the font name, font size, and whether it is bolded/italicized, without compromising speed. As there are many instances of tables throughout the Senate papers, we need to include this ability in our consideration. Although PyMuPDF is considered to be weaker in table extraction than pdfplumber, it includes a `find_tables()` function which handles text wrapping inside explicit grid lines well, which is our primary use case. If tables are being flattened badly, it is possible to later integrate pdfplumber, but using PyMuPDF alone is the best starting place.
+If a Python library is used for text extraction and PDF conversion, the best option is to use PyMuPDF. PyMuPDF returns detailed information about the text, including the font name, font size, and whether it is bolded/italicized, without compromising speed. As there are many instances of tables throughout the Senate papers, we need to include this ability in our consideration. Although PyMuPDF is considered to be weaker in terms of table extraction than pdfplumber, it includes a `find_tables()` function which handles text wrapping inside explicit grid lines well, which is our primary use case. If tables are being flattened badly, it is possible to later integrate pdfplumber, but using PyMuPDF alone is the best starting place.
+
+### Structure of Extraction in PyMuPDF
+Extracted text in PyMuPDF follows a specific hierarchy: Page → Block → Line → Span (meaning spans are within lines which are within blocks, ...). A span is a span of words with consistent styling (font, font size, bold/italic, etc.). The maximum length of a span is an entire line. A line is a horizontal row, like a line of text. A block is the highest level of text organization on a page, and usually represents a structural element like a paragraph, a column of text, a header, or an image.
 
 ### Building an XML Tree (lxml)
 While PyMuPDF provides the ability to recognize precise structure of the document, it cannot natively create an XML document with a custom schema from this information. From the font and positional data provided by PyMuPDF, we need to create rules to identify certain elements of the paper. For example, the combination of a larger font + bold + in top right corner of page = paper code. Or small text + bottom of page = footer. From the identified element, we can add in the desired XML tag with the extracted text from that section.
 
-As XMLs follow a nested tree structure, we have to keep track of where the opening and closing tags. One method of keeping track of where the tags should start and end is by using a stack. However, a cleaner method would be to use lxml. 
+As XMLs follow a nested tree structure, we have to keep track of where the opening and closing tags should be. One method of keeping track of where the tags should start and end is by using a stack. However, a cleaner method would be to use lxml, a Python library used for processing XML/HTML. lxml manages the open/close tags for you by building an in-memory tree structure, which eliminates the need for a stack. It also provides the advangtage of automatically converting PDF text containing characters like &, <, or > into an XML-friendly format. You can also modify the tree dynamically, meaning you can change tag names along the way instead of having to redo the entire stack. When the document is ready to be finished, lxml automatically handles the serialization to XML. 
 
+As lxml cannot read/parse PDF files on its own, it must be used in combination with one of the previously mentioned Python libraries, such as PyMuPDF.
 
-### **Conversion Pipeline
+**XPath support:** lxml offers has full XPath support. XPath is a querying language much like SQL which is used to identify and extract information from particular parts of an XML document, and relies on XML tags. XPath will be useful for searching for specific tags when finding places to inject hyperlinks. For instance, we should not be inserting a hyperlink at every instance of a paper code; for the actual paper, they are repeatedly used as a header. With XPath, we could specifically query instances of a papercode that are *not* within a header tag. 
+
+**lxml structure:** When creating an XML tree using lxml, the root of the document is created with an `Element` object. A branch/child node is then added with a `SubElement` object, which allows for a detailed nested structure. SubElements can take on custom attributes which may be helpful for storing metadata. An example of creating a new `SubElement` object is say we have identified a paper code in the header based on large font size and location in upper right corner. If we see that it is a new paper code, indicating the start of the next paper, we can add `etree.SubElement(root, "paper", paperCode="S 23/24 3D")` which will create the tag `<paper paperCode="S 23/24 3D"> ... </paper>` in the final XML file.  
+
+### XML Validation
+A major concern when creating the XML documents is how do to ensure the generated tree fits the desired schema&mdash;how do we prove the generated document is correct? This can be achieved through the creation of an XSD (XML Schema Definition) file. XSD files are XML files which dictate the structure, data types, and rules for an XML document. The XML document can be linked to the relevant XSD, much like how you link to a CSS file at the top of an HTML file.
+
+### Conversion Pipeline
+1. Extract blocks with PyMuPDF
+2. Combine blocks across pages where there is a continued paragraph
+3. Classify each block based on custom tags
+4. Add a `SubElement` in lxml for the relevant block classification
+5. Serialize to XML once all of the document has been processed
+6. Validate XML construction using XSD file
+
+*Note:* Based on the hierarchy of how PyMuPDF extracts text, blocks are limited within the page. This may occasionally cause a paragraph to be broken off into two blocks if it continues over the page line (as it will not be detected as a continuation of the same block by the library). The suggested solution is to perform a post-processing step once the library has extracted the text to combine blocks together that seem to be part of the same paragraph, likely based on if the next block starts with lowercase or the previous block does not end with punctuation. Another method would be to start from spans, then combine into lines, then combine into blocks. In other words, create custom blocks rather than relying on the library's built in detection.
+
+*Note:* We are likely going to have to define different procedures for creating the XML the different types of documents, as there are some structural differences between the minutes versus the agendas and papers. There is also some variation within the document types themselves&mdash;some minutes use tables while others use lists. This is particularly relevant when creating the XSD to validate the generated file.
 
 </br>
 
