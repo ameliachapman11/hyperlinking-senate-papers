@@ -96,6 +96,25 @@ Unstructured
 **Overall recommendation:** 
 If a Python library is used for text extraction and PDF conversion, the best option is to use PyMuPDF. PyMuPDF returns detailed information about the text, including the font name, font size, and whether it is bolded/italicized, without compromising speed. As there are many instances of tables throughout the Senate papers, we need to include this ability in our consideration. Although PyMuPDF is considered to be weaker in terms of table extraction than pdfplumber, it includes a `find_tables()` function which handles text wrapping inside explicit grid lines well, which is our primary use case. If tables are being flattened badly, it is possible to later integrate pdfplumber, but using PyMuPDF alone is the best starting place.
 
+### Alternatives to Python Libraries
+**Apache Tika:**
+* Java-based content extraction toolkit designed to pull text and metadata out of many file types, including PDFs
+* Implementation in the pipeline: would just be used for text extraction, cannot also automatically convert to PDF
+* Main strengths: can run as a server so the app can send PDFs to it automatically
+* Downside: information about font and layout is flattened/lost, still need to implement post-processing logic about whether or not a paragraph continues across the page *(see Conversion Pipeline)*
+
+**GROBID:**
+* Open-source machine learning library designed to parse documents into structured XML
+  * Uses TEI (Text Encoding Initiative), a standardized format/XML vocabulary commonly used in the digital humanities
+* Primarily intended for scholarly papers and journal articles
+* Main strengths: can be used for outputting XML, not just for extracting text, can handle paragraphs across multiple pages
+* Downside: would still need to be mapped to a custom schema, information about font and layout is flattened/lost, more computationally heavy because it is ML-based
+
+**Overall recommendation:**
+Stick with PyMuPDF. Tika is best for text-extraction applications when you do not know what type of file you are dealing with ahead of time&mdash;it normalizes everything into standard XHTML. However, since we know ahead of time that we are only dealing with PDFs, PyMuPDF provides more information about the text (including font and position), which enables precise control about what becomes what type of text becomes what type of XML tag. 
+
+While GROBID has the advantage of going straight to XML with a standardized schema, to really benefit from it offers, it would be better to convert from using a custom schema to using TEI. The metadata included at the top could be included in the `<teiHeader>` tag. However, there is no guarantee that TEI would fit well with the structure of the Senate paper documents&mdash;would it be able to section the different papers based on paper code, for instance? GROBID provides uncertainty, while we know a custom schema fits the strcutre of the documents precisely.
+
 ### Structure of Extraction in PyMuPDF
 Extracted text in PyMuPDF follows a specific hierarchy: Page → Block → Line → Span (meaning spans are within lines which are within blocks, ...). A span is a span of words with consistent styling (font, font size, bold/italic, etc.). The maximum length of a span is an entire line. A line is a horizontal row, like a line of text. A block is the highest level of text organization on a page, and usually represents a structural element like a paragraph, a column of text, a header, or an image.
 
