@@ -146,12 +146,23 @@ A major concern when creating the XML documents is how do to ensure the generate
 
 </br>
 
-## **Workflow
+## Workflow (CMS version)
+**Note:** In the following workflow, it is assumed that the recommended build approach of using a CMS such as Drupal and a search engine such as Apache Solr is taken, as detailed in the [Build Approach](buildApproach.md) file. It is also assumed that the recommendation of using PyMuPDF and lxml is used, as suggested in the *Conversion from PDF to XML* section.
 
-</br>
+### 1. Upload Each Paper Into the CMS
+Each PDF paper will be stored in the content management system as the original authoritative document.
 
-## **Alternative solution (non-XML)
-If using XML became unrealistic (perhaps due to timeline constraints), an alternative solution would be to eliminate XML from the workflow and produce a "Referenced Papers" section in the paper's page on the website. 
+### 2. Trigger Processing Pipeline
+Once the PDF is uploaded, the CMS will trigger a backend processing job, which can either be done immediately or added to background queue. Taking Drupal as an example, a custom Drupal module will need to be developed using PHP and YAML files which tells the CMS that once the file is uploaded to execute the rest of the workflow.
+
+### 3. Extract Metadata From File Name and Add to CMS
+As detailed in the *Paper Codes and File Names* section, the file names of the PDF's follow a strict naming convention. We can take advantage of this to extract metadata information by using regex matching, which can then be attached to the file in the CMS. 
+
+### 4. **Convert from PDF to XML
+Convert each PDF to structured XML with a custom schema using PyMuPDF and lxml, as described in the *Conversion from PDF to XML* section. We will also include a `xml:id` at the beginning of each agenda, paper, minute item, etc. which will be used later when creating links. `xml:id` is a standard attribute used to assign unique identifiers to elements in an XML document and can be rendered as HTML IDs.
+
+* What is an HTML ID? How can these be changed into links?
+* We need to a define a custom naming schema for the ID's, likely largely based on the file name convention
 
 </br>
 
