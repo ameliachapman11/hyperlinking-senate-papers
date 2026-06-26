@@ -158,11 +158,22 @@ Once the PDF is uploaded, the CMS will trigger a backend processing job, which c
 ### 3. Extract Metadata From File Name and Add to CMS
 As detailed in the *Paper Codes and File Names* section, the file names of the PDF's follow a strict naming convention. We can take advantage of this to extract metadata information by using regex matching, which can then be attached to the file in the CMS. 
 
-### 4. **Convert from PDF to XML
-Convert each PDF to structured XML with a custom schema using PyMuPDF and lxml, as described in the *Conversion from PDF to XML* section. We will also include a `xml:id` at the beginning of each agenda, paper, minute item, etc. which will be used later when creating links. `xml:id` is a standard attribute used to assign unique identifiers to elements in an XML document and can be rendered as HTML IDs.
+### 4. Convert from PDF to XML
+Convert each PDF to structured XML with a custom schema using PyMuPDF and lxml, as described in the *Conversion from PDF to XML* section. We will also include a `xml:id` at the beginning of each agenda, paper, minute item, etc. which will be used later when creating links. `xml:id` is a standard attribute used to assign unique identifiers to elements in an XML document and can be rendered as HTML IDs (a unique id for an HTML element). We will need to a define a custom naming schema for the ID's, likely largely based on the file name convention. 
 
-* What is an HTML ID? How can these be changed into links?
-* We need to a define a custom naming schema for the ID's, likely largely based on the file name convention
+### 5. Store the XML file in the CMS 
+Add the XML extracted version of each paper into the CMS and inherit metadata from the parent PDF paper. This should be done alongside the original paper instead as a replacement. It may be helpful to include an extra metadata field for the XML to show which parent PDF it comes from, perhaps the file name.
+
+### 6. Generate Deterministic Links for Obvious Matches
+There are many instances where a paper will refer to another paper explicitly by paper code; in this case, it is easy to link them together. We can take advantage of the XML ID's previously added to generate the hyperlink. Through the standard naming schema of the paper code, we can identify which document is being referenced by metadata, take the file name, and append `#unique-id` to generate a hyperlink to that specific section. 
+
+An example is `xml:id = "S_23/24_3F"`. We can identify this belongs to the file `SEN_AP_20240522`, so the generated hyperlink would be `SEN_AP_20240522.html#S_23/24_3F`. Note that the filepath includes `.html` instead of `.pdf` or `.xml`, as we want it to link to the correct spot in the HTML once the XML is rendered as HTML.
+
+TO DO: FINISH
+* The logic for matching agenda & minute items versus other explicit references w/ paper codes will be slightly different. Likely use XPath here. 
+
+
+### TO DO: FINISH ADDING STEPS 
 
 </br>
 
