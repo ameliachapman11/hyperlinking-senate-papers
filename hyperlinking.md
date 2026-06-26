@@ -169,9 +169,40 @@ There are many instances where a paper will refer to another paper explicitly by
 
 An example is `xml:id = "S_23/24_3F"`. We can identify this belongs to the file `SEN_AP_20240522`, so the generated hyperlink would be `SEN_AP_20240522.html#S_23/24_3F`. Note that the filepath includes `.html` instead of `.pdf` or `.xml`, as we want it to link to the correct spot in the HTML once the XML is rendered as HTML.
 
-TO DO: FINISH
-* The logic for matching agenda & minute items versus other explicit references w/ paper codes will be slightly different. Likely use XPath here. 
+The logic for matching agenda and minute items versus other explicit references to paper codes will be slightly different. For example, each item in the agenda should link back to the item in the minutes. If we kept the same logic as other references, we would like to the paper code later in the same Agenda & Papers instead of to the minutes as desired. This would likely be a good use of XPath to specify that for certain tags, it should follow a certain logic.
 
+### 7. Prepare Documents To Send to Solr
+Search engines such as Apache Solr store documents in a core or a collection, which acts like a database. Documents consist of multiple fields, which can include the text of the document itself along with various metadata fields. We have to prepare records to be sent to the search engine before it can be stored and indexed. For each document, we should include parent file metadata (including unique parent document ID) and the actual XML file. 
+
+Solr only automatically parses XML if it is in Solr's native XML format (with specified fields). Since we are using a custom XML schema, we need to convert to Solr update XML schema, which flattens our XML into a searchable version usable by Solr. "Flattening" our XML means getting rid of the nested structure, and instead consists of `<field>` tags within a larger `<doc>`. We can add our custom tag name back into the `name` attribute of the `field` tag. 
+* *Note: instead of converting to Solr update XML, we could alternatively convert to JSON but it feels more logical to stick with XML*
+
+We will have to create one Solr document per whole paper and one per logical section (ex. for a specific paper within a wider SEC meeting). The smaller units can be identified through the XML tags we have already created through our custom schema. The document per whole paper will be used for keyword search functionality, when a user searches a keyword/keyword phrase and the application will return the most relevant documents. The document per section will be used when linking more ambiguous references between Senate papers. Since we will have multiple document types, it may be helpful to add an extra metadata field to denote record type so that when you are querying Solr you can specify whether you want to search unit-level or document-level. This may be done through something like `record_type = document` or `record_type = section`. 
+
+### 8. Send for Indexing
+When you send documents to a search engine, they are automatically added to the core/collection and indexed. A document being indexed means that it is broken down into searchable terms and organized it into a data structure much like an index in a back of a textbook, where you can search up a word and it tells you relevant pages. We can verify that records have been correctly added and with the correct metadata by opening the Solr Admin UI and running a query for known metadata.
+
+### 9. Resolve Additional/Ambiguous Links Using Unit-Level Search
+After indexing, we will query the unit-level Solr records to find the best target unit for harder references that were not resolved by explicit rules. In general terms, these will be references where a specific committee and meeting date is listed, but a specific paper code is not included.
+
+**Practical example:** Say that there is a phrase in a Senate paper that says "...the October 2024 meeting of the APRC..." and elsewhere in the sentence it mentions "the School of Literatures, Languages, & Cultures." In the paper for the October 2024 meeting of the APRC, the search engine will find the section/paper most relevant to literature, languages, and cultures and return it. This is the proposed section to be hyperlinked.
+
+This task can further be broken down into subtasks:
+* Detect candidate references to other papers
+* Match each reference to a target paper by metadata matching (committee, date)
+* Extract the local context around the reference (current sentence, hearby sentences, current section heading)
+* Find most relevant target section by querying the target paper with the local context
+* Generate hyperlink to that specific section
+* Apply confidence rule *(see below)*
+* Inject hyperlink back into HTML
+
+*Note: although the original XML document will be changed, we do not need to resend the document to Solr because the text has been flattened, which will not include hyperlinks*
+
+**Confidence Rule:** Although we have found a proposed section to hyperlink to, this should not be accepted blindly. Instead, the backend should implement a confidence which only creates a section-level link if one section is clearly the best match, and creates a link to the start of the document if the match is weak. Possible ways of identifying a "good match" are heuristic rules using the relevance score of the top result, the gap between scores of the top and second result, whether an exact phrase or heading terms matched, etc.
+
+### **10. Render XML as HTML
+
+### **11. Add Final HTML to Frontend
 
 ### TO DO: FINISH ADDING STEPS 
 
