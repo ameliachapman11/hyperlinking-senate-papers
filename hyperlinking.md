@@ -162,7 +162,7 @@ As detailed in the *Paper Codes and File Names* section, the file names of the P
 Convert each PDF to structured XML with a custom schema using PyMuPDF and lxml, as described in the *Conversion from PDF to XML* section. We will also include a `xml:id` at the beginning of each agenda, paper, minute item, etc. which will be used later when creating links. `xml:id` is a standard attribute used to assign unique identifiers to elements in an XML document and can be rendered as HTML IDs (a unique id for an HTML element). We will need to a define a custom naming schema for the ID's, likely largely based on the file name convention. 
 
 ### 5. Store the XML file in the CMS 
-Add the XML extracted version of each paper into the CMS and inherit metadata from the parent PDF paper. This should be done alongside the original paper instead as a replacement. It may be helpful to include an extra metadata field for the XML to show which parent PDF it comes from, perhaps the file name.
+Add the XML extracted version of each paper into the CMS, attatching it to the Drupal record for the parent PDF.
 
 ### 6. Generate Deterministic Links for Obvious Matches
 There are many instances where a paper will refer to another paper explicitly by paper code; in this case, it is easy to link them together. We can take advantage of the XML ID's previously added to generate the hyperlink. Through the standard naming schema of the paper code, we can identify which document is being referenced by metadata, take the file name, and append `#unique-id` to generate a hyperlink to that specific section. 
@@ -200,11 +200,16 @@ This task can further be broken down into subtasks:
 
 **Confidence Rule:** Although we have found a proposed section to hyperlink to, this should not be accepted blindly. Instead, the backend should implement a confidence which only creates a section-level link if one section is clearly the best match, and creates a link to the start of the document if the match is weak. Possible ways of identifying a "good match" are heuristic rules using the relevance score of the top result, the gap between scores of the top and second result, whether an exact phrase or heading terms matched, etc.
 
-### **10. Render XML as HTML
+### 10. Render XML as HTML
+Although XML documents can technically be viewed directly, they are not user-friendly to look at. Instead, the XML documents are rendered as HTML for easy user interaction. As your computer does not automatically know how to render custom XML tags, we must define an XSLT file. XSLT, or Extensible Stylesheet Language Transformations, is an XML based language used for styling XML documents, much like how CSS is used for HTML documents. The relevant XSLT file must be linked at the top of each XML document, like how a CSS document must be linked at the top of an HTML file. A simplified way of thinking of an XSLT document is that you have to create a certain style for each tag, specifying font, size, etc. Once the HTML is rendered, it will be added to the paper's record in Drupal (along with the PDF, XML doc, and metadata).
 
-### **11. Add Final HTML to Frontend
+*Note: the styling of the HTML version will not exactly match the original PDF paper, but will contain the same content*
 
-### TO DO: FINISH ADDING STEPS 
+### 11. Add Final HTML to Frontend
+Since the HTML file is stored in the drupal document record, it can be displayed in the document page for that paper. The way this will be implemented on the frontend is when a user clicks on a link for a specific paper, it will bring up a page showing metadata, a link to the original PDF or a way to view it, and the final hyperlinked version of the paper (the HTML). 
+
+### Additional notes
+This process involves a two pass pipeline. The hyperlinking step cannot be executed until all papers are uploaded, otherwise a candidate reference may be identified but failed to be linked because the relevant paper has not yet been uploaded into the CMS. The first pass is when the PDF is uploaded to Drupal&mdash;this should trigger the conversion to XML. There is then a second pass when all papers have been uploaded where then, paper by paper, hyperlinks are added and XML is rendered as HTML. The second pass should be implemented through a manual batch trigger, either through a Drush command or a simple custom admin page/button which triggers the hyperlinking pipeline. Drush is a command-line interface and scripting tool for Drupal websites
 
 </br>
 
