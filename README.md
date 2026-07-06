@@ -9,4 +9,5 @@ The goal of the project is to evaluate the University of Edinburgh's storage of 
 * The [Build Approach](buildApproach.md) file provides recommendations for possible build approaches for the web evaluation, including evalutations of various from-scratch and out-of-the-box approaches, including CMS's such as Drupal
 * The [Hyperlinking](hyperlinking.md) file provides a workflow for how automated hyperlinking of references between papers would be implemented in the web application and evaluates a possible usage of XML files for this purpose
 * The [8 Week Plan](8weekPlan.md) file is the planned schedule of the internship, as developed in the first week
+* The `test` folder consists of documents and a Jupyter notebook file used to develop the conversion to XML script
 * All other documents and folders correspond to the initialization of a Drupal site
