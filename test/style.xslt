@@ -12,10 +12,18 @@
                     .body-text { margin: 12px 0; display: block; }
                     .image-container { margin: 20px 0; }
                     .image-container img { max-width: 100%; height: auto; display: block; }
+                    
+                    /* Table Styles */
                     table { border-collapse: collapse; width: 100%; margin: 20px 0; }
                     table, th, td { border: 1px solid #ccc; }
-                    td { padding: 10px; text-align: left; }
                     tr:nth-child(even) { background-color: #f9f9f9; }
+                    
+                    /* UPDATED: Added line-height and padding to fix squished cells */
+                    td { padding: 12px 10px; text-align: left; line-height: 1.5; }
+                    
+                    /* Added link styling */
+                    a { color: #0066cc; text-decoration: none; }
+                    a:hover { text-decoration: underline; }
                 </style>
             </head>
             <body>
@@ -38,12 +46,6 @@
         </p>
     </xsl:template>
 
-    <xsl:template match="a">
-        <a href="{@href}">
-            <xsl:apply-templates/>
-        </a>
-    </xsl:template>
-
     <xsl:template match="image">
         <div class="image-container">
             <img src="data:image/{@ext};base64,{normalize-space(.)}" alt="Embedded Document Image" />
@@ -64,8 +66,18 @@
 
     <xsl:template match="cell">
         <td>
-            <xsl:value-of select="."/>
+            <xsl:apply-templates/>
         </td>
+    </xsl:template>
+
+    <xsl:template match="br">
+        <br/>
+    </xsl:template>
+
+    <xsl:template match="a">
+        <a href="{@href}">
+            <xsl:apply-templates/>
+        </a>
     </xsl:template>
 
 </xsl:stylesheet>
