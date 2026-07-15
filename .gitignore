@@ -1,0 +1,26 @@
+# LocalWP internal folders — machine-specific
+wordpress/conf/
+wordpress/logs/
+
+# Config - contains local DB credentials
+wordpress/app/public/wp-config.php
+
+# Uploads — handle separately
+wordpress/app/public/wp-content/uploads/
+
+# Caching/logs
+wordpress/app/public/wp-content/cache/
+wordpress/app/public/wp-content/upgrade/
+*.log
+
+# OS/Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
