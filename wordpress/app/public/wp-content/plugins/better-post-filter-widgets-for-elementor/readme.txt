@@ -1,0 +1,241 @@
+=== Better Post & Filter Widgets for Elementor ===
+Contributors: nomade123456
+Donate link: https://wpsmartwidgets.com/donate/
+Tags: elementor, woocommerce, product filter, post filter, ajax filter
+Requires at least: 6.2
+Tested up to: 7.0
+Requires PHP: 7.4
+Stable tag: 1.8.8
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
+
+The only free pro-grade Elementor filtering system for posts, taxonomies, custom fields, ACF, WooCommerce, WPML & more. Ditch paid limits!
+
+== Description ==
+
+The only free Elementor plugin for unlimited pro-grade filtering of all your post content. Filter by taxonomies, custom fields, ACF, relational fields, and numeric ranges – with seamless integration, no restrictions, and full customization. Get advanced filtering features without paying for limitations.
+
+### Filter Widget Key Features:
+- Compatible with Elementor Pro post widget, ACF, WooCommerce and most translation plugins.
+- True faceted filtering with real-time option availability and dynamic result counts.
+- Filter any post type.
+- Customizable filter items list with easy re-ordering options.
+- Filter anything using taxonomies, custom fields/ACF, relational and numeric fields.
+- Keyword search support for custom field/ACF.
+- Various filter types catered to diverse use-cases: checkboxes, radio buttons, label list, dropdown, numeric range, select2 (single & multiple select).
+- Fine-tune the filter with the choice of relation (AND or OR) between terms and parents.
+- User-friendly more/less and toggle options, ideal for managing extensive lists.
+- Choose how filters are applied: Auto-submission or Submit button mode.
+
+[Filter Widget Demo](https://wpsmartwidgets.com/doc/better-post-and-filter-widgets/filter-post-widgets-demo/) – See the filter in action. 
+
+### Post Widget Key Features:
+- Query multiple post types at once.
+- Do more with less – display posts, users, and taxonomies using a single widget.
+- Effortlessly switch between a dynamic carousel or grid layout at different breakpoints.
+- Make the most of Swiper API with advanced features such as carousel synching, parallax effects, and more.
+- Multiple layout options, including classic, on the side, banner, template grid (loop grid), and custom HTML.
+- Possibility to create your own loop grid, with any dynamic tags and Elementor widgets.
+- Flexible post content options: title, content, excerpt, custom field/ACF, taxonomy, HTML, post meta, read more, bookmark, edit options, product price, product rating, buy now, and product badge.
+- Flexible query system with AJAX pagination.
+- Customize widget content and style like native Elementor widgets.
+- Feed-style layouts with taxonomy-based grouping, ideal for magazine or news-style content.
+
+[Post Slider/Carousel Demo](https://wpsmartwidgets.com/doc/better-post-and-filter-widgets/elementor-post-slider-travel-theme-demo/) – Check out the post widget possibilities.
+
+### Create Loop Grids for Free:
+Create dynamic loop grids without Elementor Pro. Design fully custom layouts using any Elementor widget and dynamic tag, while keeping full compatibility with filtering and AJAX pagination.
+
+### Exclusive Dynamic Tags:
+- Exclusive Repeater Field Tag: Unlock the ability to directly output ACF repeater fields in the Elementor frontend, with the flexibility to wrap each part in different HTML tags.
+- Includes a series of dynamic tags, allowing users to fully utilize template grids with the free version.
+
+### Crafted for Seamless Elementor Integration:
+- Blends seamlessly with Elementor's native interface.
+- No disruptive branding — Enjoy a clean, streamlined interface without unnecessary distractions.
+- Lightweight design, utilizing Elementor's resources to minimize external dependencies.
+
+### Developer-Friendly:
+Tailor the widgets to your needs using dedicated filters and developer hooks.
+
+= Troubleshooting =
+
+- Make sure the Post Widget class name and the Filter Widget target match.
+- Check for incompatible plugins or theme conflicts:
+  1. Temporarily switch to a default WordPress theme.
+  2. Deactivate all other plugins except Elementor and Better Post & Filter Widgets.
+  3. Test the filter. If it works, reactivate your plugins one by one to find the one causing the conflict.
+- Disable caching or optimization plugins while testing, as they can interfere with AJAX.
+- Check the browser console for JavaScript errors (press F12 and look under the Console tab) and resolve any errors that appear.
+
+== Frequently Asked Questions ==
+
+= Connecting the Filter Widget =
+
+To link your Filter Widget to a Post or Loop Grid widget, follow these steps:
+
+1. Open the Post Widget settings in Elementor.
+Go to the Advanced tab and enter the following in the CSS Classes field:
+`results`
+2. Open your Filter Widget.
+In the Post Widget Target field, enter:
+`.results`
+3. Save the page. The filter will now update the correct widget.
+
+Note: `results` is a reference class. You can choose any class or id name you like, as long as the Filter Widget target matches the Post Widget class (with a .) or id (with a #).
+
+= The post meta are not displaying =
+
+The list of available meta fields will only display for the selected post type.
+
+For more details, check out this [article](https://wpsmartwidgets.com/doc/better-post-and-filter-widgets/filter-widget/#filter-configuration).
+
+= Why isn't AJAX working on my site? =
+
+AJAX should work automatically on most WordPress themes built according to standards. However, if AJAX isn't working, here are a few things to check:
+
+1. **Check if WordPress logging is enabled.** Sometimes, when WordPress logging is enabled, it can interfere with AJAX functionality. Try disabling logging to see if that resolves the issue.
+2. **Ensure your theme supports AJAX.** Some themes, especially older or custom-built ones, might not properly support AJAX. Make sure your theme is up to date and follows WordPress best practices.
+3. **Check for JavaScript errors.** JavaScript errors on the page can prevent AJAX from working. Open your browser's developer tools and check the console for any errors that could be affecting AJAX functionality.
+4. **Conflicting plugins.** Certain plugins, especially caching or performance optimization plugins, might conflict with AJAX. Try temporarily disabling them to see if the issue persists.
+5. **Check server-side restrictions.** Some servers might have restrictions that prevent AJAX requests from functioning properly. Contact your hosting provider to ensure that AJAX requests are not being blocked by security rules or firewall settings.
+
+If none of these steps resolve the issue, feel free to reach out on the [support forum](https://wordpress.org/support/plugin/better-post-filter-widgets-for-elementor/) for further assistance.
+
+= Does the Filter Widget work with custom post types (CPT)? =
+
+Yes, it does out-of-the-box, but be aware of the following:
+1. The post type you choose in the filter will override the post type selected in the post widget. For example, if your post widget is showing posts, but you select products in the filter, once you interact with the filter, the post widget will display products instead of posts.
+2. If you want the filter to return results based on the selected meta or taxonomy instead of the post type, you can choose the "Any" option under the post type to filter.
+3. Dynamic filtering can be enabled to include the current archive context in the filter results.
+
+= Is the Filter Widget compatible with other widgets? =
+
+The filter widget is designed to work with most widgets that use a post query, such as post or product widgets. If a widget pulls data via a post query, the filter can potentially hook into it. However, pagination is fully supported only for widgets from Better Post & Filter Widgets for Elementor and Elementor Pro. Other widgets may lack pagination or loading animations, as these features rely on specific HTML and CSS.
+
+= How can I report security bugs? =
+
+You can report security bugs through the Patchstack Vulnerability Disclosure Program. The Patchstack team helps validate, triage and handle any security vulnerabilities. [Report a security vulnerability.](https://patchstack.com/database/vdp/eace7b8a-24fe-4a69-b0af-ee83a3c7496a)
+
+== Installation ==
+
+1. Upload the plugin files to the `/wp-content/plugins/better-post-and-filter-widgets` directory, or install the plugin through the WordPress plugins screen directly.
+2. Activate the plugin through the 'Plugins' screen in WordPress.
+3. Navigate to the Elementor editor and start using the widgets.
+
+== Docs and Support ==
+
+Find support for this plugin in the [documentation](https://wpsmartwidgets.com/doc/better-post-and-filter-widgets/).
+
+== Source Code ==
+
+This plugin includes both compressed and uncompressed versions of CSS and JavaScript files and can be found under the `/assets/` directory.
+
+== Screenshots ==
+
+1. Overview of the widgets on a page.
+2. Backend view of the Elementor edit screen, showing the filter widget options.
+3. Backend view of the Elementor edit screen, showing the post widget options.
+
+== Changelog ==
+
+= 1.8.8 – 2026-06-24 =
+
+* New: Added style controls for quick deselect pills and selected terms shortcodes.
+* Fix: Fixed filter REST API pagination issue when used with the Elementor Pro Loop Grid widget.
+* Fix: Fixed compatibility issue with Elementor Pro load more pagination when using BPFWE filtering.
+* Fix: Added plugin-specific prefix to key Post Widget controls to prevent conflicts with other third-party plugins.
+* Tweak: Dynamic background handler is now disabled by default. Sites that rely on dynamic background image resolution can re-enable it via the "Refresh Background Images" control or the `bpfwe_enable_background_image_resolution` filter.
+* Tweak: "Scroll to top" behavior is now disabled by default in both Post and Filter widgets.
+
+= 1.8.7 – 2026-05-29 =
+
+* New: Added mobile mode shortcode to dynamically reposition filter widgets at specific breakpoints.
+* New: Added boolean support for custom meta fields.
+* New: Added numeric format support for checkboxes, radio buttons, and label lists.
+* New: Added step size control for numeric ranges.
+* New: Added "after" suffix field for numeric inputs to support trailing currency symbols and European formats.
+* Fix: Fixed masonry layout flickering with infinite/load more pagination.
+* Fix: Fixed post duplication in feed layout with infinite/load more.
+* Fix: Resolved permission issues with caching plugins.
+* Fix: Improved numeric sliders (decimal support, reset behavior, dynamic step calculation).
+* Tweak: Converted filter utility classes (e.g. selectable pills) into shortcodes with backward compatibility.
+* Tweak: Added missing dynamic CSS classes and attributes to post widget.
+* Dev: Added global loop attribute filters for post rendering: bpfwe/post_wrapper_attr/loop, bpfwe/post_wrapper_inner_attr/loop, bpfwe/post_attr/loop
+* Dev: Migrated plugin-wide AJAX to REST API.
+
+= 1.8.6 – 2026-03-26 =
+
+* New: Added range slider support for numeric meta filters, including styling controls for full design customization.
+* Fix: Dynamic Archive Filtering is now fully context-aware on search result archive pages, keeping results within the searched terms.
+* Tweak: Improved and clarified descriptions for several options to enhance usability.
+
+= 1.8.5 – 2026-03-24 =
+
+* Fix: Resolved an issue where selected state style controls in the Filter widget were not applied.
+* Fix: Dynamic styling in the Post widget now correctly reflects styles defined via dynamic tags.
+
+= 1.8.4 – 2026-02-26 =
+
+* New: Add to Cart support added to the Post widget.
+* New: Added Time format option for custom field value formatting in the Filter widget.
+* New: A single Filter widget can now target multiple Post widgets using a comma-separated list of selectors.
+* New: Taxonomy terms in the Filter widget can now dynamically adapt on archive pages.
+* Fix: Resolved an issue where the Post Content dynamic tag would echo its content in the Elementor editor.
+* Fix: Background image class now correctly resolves individual images per loop item instead of repeating the first resolved image.
+* Fix: Background image class now correctly resolves context for taxonomy, user, and author loop queries instead of always defaulting to post ID.
+* Fix: ACF/SCF compatibility added to taxonomy and user query featured image resolution.
+* Tweak: Reinforced security and data validation.
+
+= 1.8.3 – 2026-02-06 =
+
+* Fix: Improved Elementor template auto-detection for more reliable AJAX rendering when using Elementor Pro templates.
+* Tweak: Added clearer validation and fallback logic when resolving templates, pages, and widget data during AJAX requests.
+* Tweak: Clarified descriptions for performance-related options to help avoid incompatible configurations.
+
+= 1.8.2 – 2026-02-02 =
+
+* Fix: Select2 search field incorrectly triggering filters on input.
+* Fix: Selected term classes incorrectly adding extra words in some setups.
+* Fix: Interaction issues with free numeric input ranges on mobile devices.
+* Fix: Numeric ranges being reset when using pagination with faceted filtering enabled.
+* Fix: "No posts found" message on the post widget causing layout issues.
+* Fix: Meta-based filters not being correctly taken into account by faceted logic.
+* Fix: Spacing inconsistency for term count numbers on dropdowns.
+* Fix: Numbered pagination not working correctly in some setups.
+* Fix: Post widget feed layout rendering incorrectly with non-Latin characters.
+* New: URL parameters can now trigger Select and Select2 fields.
+* New/Fix: Added "Elementor Template ID" field under Additional Options for filter, search, and sorting widgets. Use this to manually specify the template ID containing the target widget when AJAX filtering fails inside an Elementor Pro template.
+
+= 1.8.0 – 2026-01-22 =
+
+* New: Filter widget now supports true faceted filtering, with dynamic counts and real-time option updates.
+  * Unavailable options can be greyed out or hidden to prevent dead-end combinations.
+  * Faceted behavior is fully opt-in and can be enabled globally or per individual filter group.
+  * Feature will continue to be refined and expanded in future releases.
+* New: Post widget now has a feed-style layout, letting you group posts by taxonomy or specific terms.
+* New: Free numeric input for meta-based filters.
+  * Numeric filters are no longer limited to predefined ranges.
+  * Users can manually enter custom minimum and maximum values.
+  * Backend users can define custom placeholders for numeric inputs.
+* New: Start expanded option for Filter widget toggle mode.
+* New: Custom AJAX handler (experimental).
+  * Optional high-performance replacement for admin-ajax.php.
+  * Can be enabled per Filter widget under Performance settings.
+  * Fully isolated and opt-in — safe for testing without affecting existing sites.
+  * Planned to become the default in a future release.
+* Fix: Corrected a typo in the Post widget where "Excluded terms" was labeled as "Included terms".
+* Fix: Fixed an issue where the inner wrapper class filter was not applied correctly in the Post widget.
+* Fix: Fixed Filter widget Load More pagination compatibility with Elementor Pro widgets.
+* Fix: Potentially resolved an Elementor editor issue where container CSS could break when using the main query in the Post widget.
+* Tweak: Post terms output can now be displayed as: comma-separated, ul or ol.
+* Tweak: Improved widget UI consistency by replacing RAW text with notice controls where appropriate.
+* Dev: Filter widget settings are now handled per widget rather than globally across linked filters.
+
+For full changelog, see [Changelog](https://wpsmartwidgets.com/doc/better-post-and-filter-widgets/changelog/).
+
+== Upgrade Notice ==
+
+= 1.8.8 =
+
+Bug fixes and new styling controls for filter pills.
