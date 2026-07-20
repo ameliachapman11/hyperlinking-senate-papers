@@ -9,7 +9,7 @@ The following is a mockup of the UI of the web application, created using Figma.
 The official brand guidelines of the University of Edinburgh were followed. Source sans pro was used for all navigational elements and in-page elements (headings, links, button text, etc.). Crimson text was used for the banner headings. University red (hex code D50032) was used for banners and as an accent color. For more information on the standards used for development, reference the following links for [typography](https://gel.ed.ac.uk/legacy/foundations/typography/) and [color theming](https://gel.ed.ac.uk/legacy/foundations/colour/).
 
 [Link to Figma mockup prototype](https://www.figma.com/proto/AK8cc36Ifu0WSqUknUchYs/UoE-Senate-Search?node-id=0-1&t=kUomcy5QFbOxt5IN-1)
-![Mockup of a search application for Senate papers, with filters and results](./UoE%20Senate%20Search.png)
+![Mockup of a search application for Senate papers, with filters and results](./assets/UoE%20Senate%20Search.png)
 
 ## Key Features
 * **Search bar:** In the search bar at the top of the page, users can enter keywords such as "Scottish Funding Council" or "Informatics" to bring up papers containing the keywords.
