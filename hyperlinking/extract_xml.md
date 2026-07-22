@@ -7,3 +7,4 @@
 * Include instructions on how to run on command line, where outputted file will be stored
 * First argument is filepath for the input PDF document from the CWD
 * The second optional argument is the filepath for the desired destination of the outputted XML document from the CWD. If left blank it will be the same as the input filepath.
+* An example of running the script: first cd into the hyperlinking folder, then run `SEN_M_20240110_20240124_e.pdf`

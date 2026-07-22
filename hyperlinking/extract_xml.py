@@ -172,7 +172,7 @@ def extract_body_text_blocks(page, page_blocks, table_bboxes, page_links):
                 continue
                 
             # Combine text across all spans for the line
-            line_text = ' '.join(span['text'] for span in spans)
+            line_text = ' '.join(span['text'] for span in spans).strip()
             
             # Identify the 'dominant' span (the longest text piece) to represent the line's style
             line_dominant = max(spans, key=lambda s: len(s['text'])) 
@@ -221,7 +221,7 @@ def extract_body_text_blocks(page, page_blocks, table_bboxes, page_links):
 
         # Add the final accumulated group of lines
         if current_lines:
-            text = " ".join(l["text"] for l in current_lines)
+            text = ' '.join(l['text'] for l in current_lines)
             text = re.sub(r'\s+', ' ', text).strip()
             if text:
                 new_block = make_sub_block(current_lines)
@@ -250,29 +250,29 @@ def extract_blocks(doc):
         # Extract body text
         extract_body_text_blocks(page, page_blocks, table_bboxes, page_links)
                         
-        # Sort blocks in page to appear by position (table and image blocks were added first)
-        page_blocks.sort(key=lambda b: b["bbox"][1]) # bbox[1] = y0
+        # Sort blocks in page to appear by position
+        # Table and image blocks were added first, which may not reflect the actual position on the page
+        page_blocks.sort(key=lambda b: b['bbox'][1])
         
-        # Put newlines where there are bulletpoints ("•" or "o")
+        # Put newlines where there are bulletpoints ("•" or "o") for rendering
         for block in page_blocks:
-            if block["type"] != "img":
-                block["text"] = clean_bullet_points(block["text"])
+            if block['type'] != 'img':
+                block['text'] = clean_bullet_points(block['text'])
         
         all_blocks.extend(page_blocks)
                 
-                
-    # Merge blocks that are part of the same paragraph together
+    # Merge blocks across pages that are part of the same paragraph together
     extracted_blocks = []
     buffer = None
     seen_images = set()
 
     for block in all_blocks:
         # If we encounter an image, clear out the buffer
-        if block["type"] == "img":
+        if block['type'] == 'img':
             # Skip duplicate images throughout doc
-            if block["image_data"] in seen_images:
+            if block['image_data'] in seen_images:
                 continue
-            seen_images.add(block["image_data"])
+            seen_images.add(block['image_data'])
             
             if buffer:
                 extracted_blocks.append(buffer)
@@ -280,10 +280,9 @@ def extract_blocks(doc):
             extracted_blocks.append(block)
             continue
             
-        if is_page_num(block): # skip page nums for XML conversion
+        # Leave out page numbers
+        if is_page_num(block):
             continue
-        
-        curr_text = block["text"].strip()
             
         # If there's no active buffer, make this block the buffer
         if buffer is None:
@@ -291,24 +290,26 @@ def extract_blocks(doc):
             continue
 
         # Check for paragraph continuation rules
+        curr_text = block['text']
         same_sentence = False
         if curr_text:
             lowercase_start = curr_text[0].islower()
             same_font_size = True
             if block['type'] == 'text' and buffer['type'] == 'text':
-                same_font_size = not abs(block["font_size"] - buffer["font_size"]) > 1
+                same_font_size = not abs(block['font_size'] - buffer['font_size']) > 1
             same_sentence = lowercase_start and same_font_size
-            
-        list_item = re.fullmatch(r'\d+\.', buffer["text"])
-        bullet_point = re.fullmatch(r'•', buffer["text"])
+        list_item = re.fullmatch(r'\d+\.', buffer['text'])
+        bullet_point = re.fullmatch(r'•', buffer['text'])
         same_paragraph = same_sentence or list_item or bullet_point
         
+        # If part of the same paragraph, append text to buffer, otherwise begin new block
         if same_paragraph:
-            buffer["text"] = buffer["text"] + " " + curr_text
+            buffer['text'] = buffer['text'] + ' ' + curr_text
         else:
             extracted_blocks.append(buffer)
             buffer = block
 
+    # Append last accumulated block
     if buffer:
         extracted_blocks.append(buffer)
     
@@ -316,12 +317,12 @@ def extract_blocks(doc):
 
 # Extract metadata automatically from CSV
 def fetch_metadata_from_csv(target_file, csv_path):
-    df = pd.read_csv(csv_path)
-    match = df[df['fileName'] == target_file] # no ext (such as .pdf)
+    csv = pd.read_csv(csv_path)
+    match = csv[csv['fileName'] == target_file] # target file should have no ext (such as .pdf)
     if match.empty:
         return None
     else:
-        return match.iloc[0].to_dict() 
+        return match.iloc[0].to_dict() # grabs first matching row & converts to dictionary
 
 # Extract metadata automatically from filename (does not extract meeting number)
 def extract_metadata_from_filename(target_file):
@@ -333,11 +334,11 @@ def extract_metadata_from_filename(target_file):
 
     # Extract committee name
     extracted_committee_name = None
-    if parts[0] == "SEN": #in CSV, Senate and E-Senate do not keep abbreviation
+    if parts[0] == 'SEN': #in the CSV file, Senate and E-Senate do not keep abbreviation
         if e_meeting:
-            extracted_committee_name = "E-Senate"
+            extracted_committee_name = 'E-Senate'
         else:
-            extracted_committee_name = "Senate"
+            extracted_committee_name = 'Senate'
     else:
         extracted_committee_name = parts[0]
         
@@ -363,24 +364,24 @@ def extract_metadata_from_filename(target_file):
     extracted_start_date, extracted_end_date = map(fix_date_formatting, (extracted_start_date, extracted_end_date))
     
     return {
-        "fileName": target_file,
-        "documentType": extracted_doc_type,
-        "committeeName": extracted_committee_name,
-        "startDate": extracted_start_date,
-        "endDate": extracted_end_date,
-        "academicYear": extracted_academic_year,
-        "meetingNumber": "Unknown"
+        'fileName': target_file,
+        'documentType': extracted_doc_type,
+        'committeeName': extracted_committee_name,
+        'startDate': extracted_start_date,
+        'endDate': extracted_end_date,
+        'academicYear': extracted_academic_year,
+        'meetingNumber': 'Unknown'
     }
 
 # Extract metadata
 def extract_metadata(file, csv_filepath):
     filename = file.name.removesuffix('.pdf')
     
-    # Validate filename
+    # Validate filename follows naming conventions
     valid_meeting_pattern = r"^(SEN|SEC|APRC|SQAC)_(AP|M)_20\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$" #supports years 2000-2099
     valid_e_meeting_pattern = r"^(SEN|SEC|APRC|SQAC)_(AP|M)_20\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])_20\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])_e$"
     if not(re.match(valid_meeting_pattern, filename) or re.match(valid_e_meeting_pattern, filename)):
-        raise Exception("Invalid filename format")
+        raise Exception('Invalid filename format')
     
     # Try extraction from CSV first
     metadata = fetch_metadata_from_csv(filename, csv_filepath)
@@ -396,38 +397,33 @@ def extract_metadata(file, csv_filepath):
     # Creates a <br> tag before each bullet point so it displays on a new line
 def build_text_el(parent_el, tag, block):
     el = etree.SubElement(parent_el, tag)
-    links = block.get("links", [])
+    links = block.get('links', [])
     
     # Split on newlines —> marks where bullet point begins
-    parts = block["text"].split("\n")
-    
+    parts = block['text'].split('\n')
     for i, part in enumerate(parts):
         part = part.strip()
         if not part:
             continue
         
         if i > 0: # no need for an empty newline before the first bit of text
-            br = etree.SubElement(el, "br")
+            br = etree.SubElement(el, 'br')
         
         # For each part, find which links fall within it
-        part_links = [l for l in links if l["text"] in part]
+        part_links = [l for l in links if l['text'] in part]
         
-        # No links, set text directly
+        # If no links, set text directly
         if not part_links:
             if i == 0: # no <br> beforehand
-                el.text = (el.text or "") + part # or "" handles when el.text = None
+                el.text = (el.text or '') + part
             else:
                 br.tail = part
-        # Build inline <a> tags
+        # Else, build inline <a> tags for each link
         else: 
             remaining_text = part
             
-            # Whether the text before the first link goes in el.text or br.tail
-            is_br_target = i > 0
-            
             for link in part_links:
-                link_text = link["text"]
-                uri = link["uri"]
+                link_text = link['text']
                 
                 # Find where the linked text sits within the remaining text
                 link_i = remaining_text.find(link_text)
@@ -437,57 +433,57 @@ def build_text_el(parent_el, tag, block):
                 before = remaining_text[:link_i]
                 after = remaining_text[link_i + len(link_text):]
                 
-                # Text before the link
+                # Set text before the link
                 if len(el) == 0:
-                    el.text = (el.text or "") + before 
+                    el.text = (el.text or '') + before 
                 else:
-                    el[-1].tail = (el[-1].tail or "") + before # el[-1] is the last <a> tag
+                    el[-1].tail = (el[-1].tail or '') + before # el[-1] is the last <a> tag
                 
                 # Create the inline <a>
-                a = etree.SubElement(el, "a")
-                a.set("href", uri)
+                a = etree.SubElement(el, 'a')
+                a.set('href', link['uri'])
                 a.text = link_text
-                a.tail = ""
+                a.tail = ''
                 
+                # Remaining text in part to be processed
                 remaining_text = after
             
-            # Remaining text after the last link
-            el[-1].tail = (el[-1].tail or "") + remaining_text
+            # Set remaining text after the last link
+            el[-1].tail = (el[-1].tail or '') + remaining_text
     
     return el
 
 # Converts pdf file to xml file 
 def convert_pdf_to_xml(file, csv_filepath):
-    root = etree.Element("committeeDoc")
+    root = etree.Element('committeeDoc')
     tree = etree.ElementTree(root)
-    metadata = extract_metadata(file, csv_filepath)
 
     # Connect to the XSLT styling sheet
     xslt = etree.ProcessingInstruction(
-        "xml-stylesheet", 'type="text/xsl" href="style.xslt"'
+        'xml-stylesheet', 'type="text/xsl" href="style.xslt"'
     )
     root.addprevious(xslt)
 
-    # Add metadata (docType, committeeName, dates, academicYear)
-    metadata_el = etree.SubElement(root, "metadata")
-    doc_type = etree.SubElement(metadata_el, "documentType")
-    doc_type.text = metadata["documentType"]
-    committee_name = etree.SubElement(metadata_el, "committeeName")
-    committee_name.text = metadata["committeeName"]
-    start_date = etree.SubElement(metadata_el, "startDate")
-    start_date.text = metadata["startDate"]
-    end_date = etree.SubElement(metadata_el, "endDate")
-    end_date.text = metadata["endDate"]
-    academic_year = etree.SubElement(metadata_el, "academicYear")
-    academic_year.text = metadata["academicYear"]
-    meeting_num = etree.SubElement(metadata_el, "meetingNumber")
-    meeting_num.text = str(metadata["meetingNumber"])
+    # Extract & add metadata (docType, committeeName, startDate, endDate, academicYear, meetingNumber)
+    metadata = extract_metadata(file, csv_filepath)
+    metadata_el = etree.SubElement(root, 'metadata')
+    doc_type = etree.SubElement(metadata_el, 'documentType')
+    doc_type.text = metadata['documentType']
+    committee_name = etree.SubElement(metadata_el, 'committeeName')
+    committee_name.text = metadata['committeeName']
+    start_date = etree.SubElement(metadata_el, 'startDate')
+    start_date.text = metadata['startDate']
+    end_date = etree.SubElement(metadata_el, 'endDate')
+    end_date.text = metadata['endDate']
+    academic_year = etree.SubElement(metadata_el, 'academicYear')
+    academic_year.text = metadata['academicYear']
+    meeting_num = etree.SubElement(metadata_el, 'meetingNumber')
+    meeting_num.text = str(metadata['meetingNumber'])
     
     # First item will always be the agenda, then the papers
-    agenda_el = etree.SubElement(root, "agenda")
+    agenda_el = etree.SubElement(root, 'agenda')
 
     # Loop through extracted blocks
-    # Current identification --> bold = heading, anything else = bodyText
     current_item = agenda_el
     current_table = None
     current_table_i = -1
@@ -496,37 +492,38 @@ def convert_pdf_to_xml(file, csv_filepath):
     current_page_i = -1
     current_paper_code = None
     for block in extract_blocks(file):
-        type = block["type"]
+        type = block['type']
         
-        if type == "img":
-            img_el = etree.SubElement(current_item, "image", ext = block["image_ext"])
-            img_el.text = block["image_data"]
+        if type == 'img':
+            img_el = etree.SubElement(current_item, 'image', ext = block['image_ext'])
+            img_el.text = block['image_data']
         
-        elif type == "table":
+        elif type == 'table':
             # Create a new table when either the page or the table index changes
+            # TODO could also enforce that if they're the same row, it has to make sense in terms of col number instead of splitting by page
+            # TODO could also keep track of number of columns in prev table, if there is the same number of columns here then it is prob part of the same table
             is_new_table = (
-                block["page_i"] != current_page_i or
-                block["table_i"] != current_table_i
+                block['page_i'] != current_page_i or
+                block['table_i'] != current_table_i
             )
 
             if current_table is None or is_new_table:
-                current_table = etree.SubElement(current_item, "table")
+                current_table = etree.SubElement(current_item, 'table')
                 current_row = None
                 current_row_i = -1
-                current_table_i = block["table_i"]
-                current_page_i = block["page_i"]
+                current_table_i = block['table_i']
+                current_page_i = block['page_i']
 
             # Create a new row when the row index changes
-            if block["row"] != current_row_i:
-                current_row = etree.SubElement(current_table, "row")
-                current_row_i = block["row"]
+            if block['row'] != current_row_i:
+                current_row = etree.SubElement(current_table, 'row')
+                current_row_i = block['row']
 
             build_text_el(current_row, "cell", block)
         
         elif type == "text":
             text = block["text"]
             font_size = block["font_size"]
-            font = block["font"]
             bold = block["bold"]
             
             # Reset table
@@ -538,21 +535,16 @@ def convert_pdf_to_xml(file, csv_filepath):
             
             if font_size > 12: # paper code identified by large font size
                 # Only start a new paper if the paper code is different from the current one
-                if current_paper_code == block["text"]:
+                if current_paper_code == text:
                     continue
                 else:
-                    paper_el = etree.SubElement(root, "paper", paperCode = block["text"])
+                    paper_el = etree.SubElement(root, 'paper', paperCode = text)
                     current_item = paper_el
-                    current_paper_code = block["text"]
+                    current_paper_code = text
             elif bold:
-                build_text_el(current_item, "boldText", block)
+                build_text_el(current_item, 'boldText', block)
             else:
-                build_text_el(current_item, "bodyText", block)   
-
-    # TODO Save to same directory
-    # xml_filename = f"{file.name.removesuffix('.pdf')}.xml"
-    # with open(xml_filename, "wb") as f:
-    #     tree.write(f, xml_declaration=True, encoding="utf-8", pretty_print=True)
+                build_text_el(current_item, 'bodyText', block)   
     return tree
 
 # Make it run as a script
@@ -560,10 +552,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     
     # Required argument for input PDF filepath
-    parser.add_argument("input_filepath")
+    parser.add_argument('input_filepath')
     
     # Optional argument for where the outputted XML should be stored
-    parser.add_argument("--output_filepath", default=None)
+    parser.add_argument('--output_filepath', default=None)
     
     args = parser.parse_args()
     
@@ -581,12 +573,12 @@ if __name__ == "__main__":
         output_path = os.path.join(input_dir, f"{input_name}.xml")
     
     # Open the document and run your existing pipeline
-    doc = pymupdf.open(args.input_pdf)
-    csv_filepath = "SenatePapers23-24.csv"
+    doc = pymupdf.open(args.input_filepath)
+    csv_filepath = 'SenatePapers23-24.csv'
     tree = convert_pdf_to_xml(doc, csv_filepath) 
     
     # Save the XML
-    with open(output_path, "wb") as f:
-        tree.write(f, xml_declaration=True, encoding="utf-8", pretty_print=True)
+    with open(output_path, 'wb') as f:
+        tree.write(f, xml_declaration = True, encoding = 'utf-8', pretty_print = True)
     
     print(f"Done — XML saved to {output_path}")
