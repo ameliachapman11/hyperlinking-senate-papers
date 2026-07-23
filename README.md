@@ -1,13 +1,14 @@
 # hyperlinking-senate-papers
-This project is the focus of a summer internship in the University of Edinburgh's Laboratory for Foundations of Computer Science (LFCS), under the supervision of Vashti Galpin, a senior researcher in the School of Informatics.  
+This project was the focus of a summer internship in the University of Edinburgh's Laboratory for Foundations of Computer Science (LFCS) in June-July 2026, under the supervision of Vashti Galpin, a senior researcher in the School of Informatics.  
 
-The goal of the project is to evaluate the University of Edinburgh's storage of Senate papers, search for existing technologies that can add hyperlinks between relevant documents, and prototype a new hyperlinked web application if an appropriate one does not exist. 
+The goal of the project was to research how to improve the storage, search, and hyperlinking of University of Edinburgh's Senate papers. I performed research evaluating build approaches of a web application, researched how keyword search may be integrated, designed a pipeline for automating hyperlinking between papers, and began developing a prototype WordPress website.
 
-## Overview of Files:
-* The [Overview and Motivation](overviewAndMotivation.md) file outlines the current issues with the University of Edinburgh's Senate's file storage and search, as well as the goals to be achieved in the new prototyped application
-* The [Design Process](designProcess.md) file describes the process in designing the Figma mockup of the application and includes an image of the mockup itself
-* The [Build Approach](buildApproach.md) file provides recommendations for possible build approaches for the web evaluation, including evalutations of various from-scratch and out-of-the-box approaches, including CMS's such as Drupal. It has not yet been updated to reflect the build approach actually taken in the project.
-* The [Hyperlinking](hyperlinking.md) file provides a workflow for how automated hyperlinking of references between papers would be implemented in the web application and evaluates a possible usage of XML files for this purpose. It has not yet been updated to reflect the current progress of the pipeline.
-* The [8 Week Plan](8weekPlan.md) file is the planned schedule of the internship, as developed in the first week. It has not yet been updated to reflect changes regarding further meetings and an inability to schedule meetings with Senate members.
-* The `test` folder consists of documents and a Jupyter notebook file used to develop the Python script for conversion from PDF to XML
-* All other documents and folders correspond to the initialization of a Wordpress site. Documentation as to how to clone the site has not yet been created.
+## Overview of Folders:
+* The `documentation` folder outlines the current progress of the project, future steps to be taken, and instructions on running/interacting with the project. For more information of the different files within the `documentation` folder, please see the [File Guide](documentation/fileGuide.md).
+* The `hyperlinking` folder consists of a Python script for converting from PDFs to the custom XML schema created for Senate papers and instructions for how to run the script.
+* The `internship` folder consists of documentation created throughout the internship, primarily used for the purpose of communicating my research progress with my advisor. For more information on the different files within the `internship` folder, please see the [File Guide](internship/fileGuide.md). 
+* The `test` folder consists of a Jupyter notebook used to develop the Python script for conversion from PDF to XML, as well as input PDFs and output XML files created while testing. The notebook was retained for further possible testing/improvement of the script.
+* The `wordpress` folder contains files related to the initialization and developement of the WordPress prototype website, such as plugins and taxonomy configuration.
+
+## Interaction Recommendation
+For those interacting with the repository for the first time, I would first recommend reading the [Overview and Motivation](internship/overviewAndMotivation.md) file within the `internship` folder for more context on the background of the project and the desired outcome. I would then recommend reading the [Current Progress](documentation/currentProgress.md) file to understand which parts of the projects have been completed and can be interacted with. Finally, I would recommend reading the [Future Steps](documentation/futureSteps.md) file to understand the future goals of the project.
