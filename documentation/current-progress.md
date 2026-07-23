@@ -8,5 +8,5 @@
 ## Hyperlinking Pipeline
 * Outline of pipeline/main goal
 * Development of custom XML schema
-* Python script for converting PDFs to custom schema
+* Python script for converting PDFs to custom schema. Generally works well on Minutes documents but struggles on longer Agenda & Papers documents where there is more atypical formatting, complicated table structure, variety of image type, etc.
 * XML can be rendered as HTML using XSLT sheet
