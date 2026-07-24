@@ -3,6 +3,8 @@ This project was the focus of a summer internship in the University of Edinburgh
 
 The goal of the project was to research how to improve the storage, search, and hyperlinking of University of Edinburgh's Senate papers. I performed research evaluating build approaches of a web application, researched how keyword search may be integrated, designed a pipeline for automating hyperlinking between papers, and began developing a prototype WordPress website.
 
+For the time being, we are limiting our focus to a small subset of papers. At the moment, we are only considering the Senate and Education Committee papers from the 2023-2024 academic school year, but plan to expand this in the future.
+
 ## Overview of Folders:
 * The `documentation` folder outlines the current progress of the project, future steps to be taken, and instructions on running/interacting with the project. For more information of the different files within the `documentation` folder, please see the [File Guide](documentation/file-guide.md).
 * The `hyperlinking` folder consists of a Python script for converting from PDFs to the custom XML schema created for Senate papers and instructions for how to run the script.
@@ -11,4 +13,4 @@ The goal of the project was to research how to improve the storage, search, and 
 * The `wordpress` folder contains files related to the initialization and developement of the WordPress prototype website, such as plugins and taxonomy configuration.
 
 ## Interaction Recommendation
-For those interacting with the repository for the first time, I would first recommend reading the [Overview and Motivation](internship/overview-and-motivation.md) file within the `internship` folder for more context on the background of the project and the desired outcome. I would then recommend reading the [Current Progress](documentation/current-progress.md) file to understand which parts of the projects have been completed and can be interacted with. Finally, I would recommend reading the [Future Steps](documentation/future-steps.md) file to understand the future goals of the project.
+For those interacting with the repository for the first time, I would first recommend reading the [Overview and Motivation](internship/overview-and-motivation.md) file within the `internship` folder for more context on the background of the project, such as the structure of the Senate and its committees, and the desired outcome. I would then recommend reading the [Current Progress](documentation/current-progress.md) file to understand which parts of the projects have been completed and can be interacted with. Finally, I would recommend reading the [Future Steps](documentation/future-steps.md) file to understand the future goals of the project.
